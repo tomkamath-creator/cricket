@@ -154,11 +154,11 @@ jobs:
         uses: softprops/action-gh-release@v2
         if: github.ref == 'refs/heads/main'
         with:
-          tag_name: v1.3.0-phase3
-          name: "CricStrike 3D Phase 3 Android Build"
+          tag_name: v1.4.0-phase4
+          name: "CricStrike 3D Phase 4 Android Build"
           body: |
-            ### CricStrike 3D - Phase 3 Android APK
-            - **Phase 3 Complete**: Complete Match Loop, 11-Player Fielder AI State Machine, Dynamic Preset Field Settings (Balanced/Attacking/Defensive), Umpire Decision Rules (Bowled, Caught, LBW 3-point Hawkeye, Run Out, No Ball, Wide, Boundaries), TV Broadcast Scoreboard HUD & 360° Wagon Wheel View.
+            ### CricStrike 3D - Phase 4 Android APK
+            - **Phase 4 Complete**: 3D Locker Room & Customization Studio, 360-degree interactive model viewer, procedural shaders for skin tones and team kits, bone scaling builds (Slim, Athletic, Heavy), swappable equipment (English/Kashmir willow, bat decals, colored pads/helmets/grills), and instant offline `user://custom_players.json` persistence.
             - **Direct Download**: Tap `cricstrike_3d.apk` below directly to install on your phone.
             - **Signatures**: Verified with APK Signature Schemes v1, v2, and v3 (compatible with Android 8 - 15).
             - **Architectures**: arm64-v8a + armeabi-v7a.
