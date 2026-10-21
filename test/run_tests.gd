@@ -2,6 +2,10 @@
 # Headless CI Test Runner for GitHub Actions and Local Testing
 extends SceneTree
 
+const TestPitchPhysics = preload("res://test/test_pitch_physics.gd")
+const TestTimingEngine = preload("res://test/test_timing_engine.gd")
+const TestStumpCollision = preload("res://test/test_stump_collision.gd")
+
 func _init() -> void:
 	print("==================================================")
 	print("   CRICSTRIKE 3D - HEADLESS TEST RUNNER (PHASE 1)  ")
@@ -10,19 +14,19 @@ func _init() -> void:
 	var all_passed: bool = true
 	
 	# Suite 1: Pitch Arena & Ball Bounce Physics
-	var pitch_ok := TestPitchPhysics.run_all_tests()
+	var pitch_ok: bool = TestPitchPhysics.run_all_tests()
 	if not pitch_ok:
 		all_passed = false
 	print("")
 
 	# Suite 2: Batting Direction & Millisecond Timing Engine
-	var timing_ok := TestTimingEngine.run_all_tests()
+	var timing_ok: bool = TestTimingEngine.run_all_tests()
 	if not timing_ok:
 		all_passed = false
 	print("")
 
 	# Suite 3: Stumps & Bails Dislodging Collision
-	var stumps_ok := TestStumpCollision.run_all_tests()
+	var stumps_ok: bool = TestStumpCollision.run_all_tests()
 	if not stumps_ok:
 		all_passed = false
 	print("")

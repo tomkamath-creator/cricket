@@ -63,7 +63,7 @@ func trigger_shot(elevation: GameConstants.ShotElevation) -> TimingEngine.Timing
 			shot_missed.emit()
 	else:
 		# Free swing without ball
-		result = TimingEngine.new()
+		result = TimingEngine.TimingResult.new()
 		result.shot_name = shot_data.name
 		result.rating = GameConstants.TimingRating.MISSED
 		result.feedback_text = "SWING"

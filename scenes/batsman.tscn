@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://batsman001"]
+[gd_scene load_steps=13 format=3 uid="uid://batsman001"]
 
 [ext_resource type="Script" path="res://scripts/batting/batting_controller.gd" id="1_batting"]
 
@@ -47,6 +47,12 @@ height = 0.62
 material = SubResource("Mat_BatBlade")
 size = Vector3(0.11, 0.62, 0.04)
 
+[sub_resource type="CylinderMesh" id="Mesh_Handle"]
+material = SubResource("Mat_Grip")
+top_radius = 0.02
+bottom_radius = 0.02
+height = 0.22
+
 [node name="Batsman" type="Node3D" node_paths=PackedStringArray("bat_node")]
 script = ExtResource("1_batting")
 bat_node = NodePath("BatPivot")
@@ -78,3 +84,4 @@ mesh = SubResource("Mesh_BatBlade")
 
 [node name="Handle" type="MeshInstance3D" parent="BatPivot/Bat"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.42, 0)
+mesh = SubResource("Mesh_Handle")

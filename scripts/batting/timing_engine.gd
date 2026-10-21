@@ -69,11 +69,14 @@ static func evaluate_contact(
 		delta_ms = time_to_plane_sec * 1000.0
 
 	result.delta_ms = delta_ms
-	var windows := get_difficulty_windows(difficulty)
-	var abs_delta := abs(delta_ms)
+	var windows: Dictionary = get_difficulty_windows(difficulty)
+	var win_perfect: float = float(windows["perfect"])
+	var win_normal: float = float(windows["normal"])
+	var win_max: float = float(windows["max"])
+	var abs_delta: float = abs(delta_ms)
 	
 	# Lateral distance check (is the ball within reach of bat arc?)
-	var lateral_offset := abs(ball_pos.x)
+	var lateral_offset: float = abs(ball_pos.x)
 	if lateral_offset > 1.35 and not use_override:
 		result.rating = GameConstants.TimingRating.MISSED
 		result.feedback_text = "OUT OF REACH"
@@ -81,10 +84,10 @@ static func evaluate_contact(
 		return result
 
 	# Check for edge / slice when reaching far outside off stump
-	var is_outside_reach := lateral_offset > 0.75
+	var is_outside_reach: bool = (lateral_offset > 0.75)
 	
 	# 1. PERFECT TIMING
-	if abs_delta <= windows["perfect"]:
+	if abs_delta <= win_perfect:
 		result.rating = GameConstants.TimingRating.PERFECT
 		result.feedback_text = "PERFECT!"
 		result.rating_color = Color(0.15, 0.95, 0.35) # Bright Emerald Green
@@ -92,27 +95,27 @@ static func evaluate_contact(
 		return result
 
 	# 2. EARLY (Hit in front of the body)
-	if delta_ms < 0 and abs_delta <= windows["normal"]:
+	if delta_ms < 0 and abs_delta <= win_normal:
 		result.rating = GameConstants.TimingRating.EARLY
 		result.feedback_text = "EARLY"
 		result.rating_color = Color(0.95, 0.85, 0.2) # Yellow
-		var power_drop := lerpf(0.92, 0.72, abs_delta / windows["normal"])
-		var angle_shift := lerpf(0.0, 12.0, abs_delta / windows["normal"]) # Leads to more elevation
+		var power_drop := lerpf(0.92, 0.72, abs_delta / win_normal)
+		var angle_shift := lerpf(0.0, 12.0, abs_delta / win_normal) # Leads to more elevation
 		_calculate_exit_physics(result, ball_vel, shot_data, power_drop, 0.9, angle_shift)
 		return result
 
 	# 3. LATE (Hit behind the body)
-	if delta_ms > 0 and abs_delta <= windows["normal"]:
+	if delta_ms > 0 and abs_delta <= win_normal:
 		result.rating = GameConstants.TimingRating.LATE
 		result.feedback_text = "LATE"
 		result.rating_color = Color(0.95, 0.55, 0.15) # Orange
-		var power_drop := lerpf(0.90, 0.70, abs_delta / windows["normal"])
-		var angle_shift := lerpf(0.0, -4.0, abs_delta / windows["normal"]) # Stays down or squirts fine
+		var power_drop := lerpf(0.90, 0.70, abs_delta / win_normal)
+		var angle_shift := lerpf(0.0, -4.0, abs_delta / win_normal) # Stays down or squirts fine
 		_calculate_exit_physics(result, ball_vel, shot_data, power_drop, 0.88, angle_shift)
 		return result
 
 	# 4. TOO EARLY (Leading edge / Skyer / Mistimed)
-	if delta_ms < 0 and abs_delta <= windows["max"]:
+	if delta_ms < 0 and abs_delta <= win_max:
 		result.rating = GameConstants.TimingRating.TOO_EARLY
 		result.rating_color = Color(0.9, 0.25, 0.25) # Red
 		if is_outside_reach or randf() < 0.4:
@@ -125,7 +128,7 @@ static func evaluate_contact(
 		return result
 
 	# 5. TOO LATE (Outside edge / Inside chop on)
-	if delta_ms > 0 and abs_delta <= windows["max"]:
+	if delta_ms > 0 and abs_delta <= win_max:
 		result.rating = GameConstants.TimingRating.TOO_LATE
 		result.rating_color = Color(0.9, 0.25, 0.25) # Red
 		result.is_edge = true

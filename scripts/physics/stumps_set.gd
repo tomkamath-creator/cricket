@@ -87,7 +87,7 @@ func shatter_wickets(impact_node: Node, impact_speed: float, hit_direction: Vect
 	wickets_broken.emit(impact_node, impact_speed)
 
 func _on_stump_hit(body: Node, stump_node: RigidBody3D) -> void:
-	if body is CricketBall or body.is_in_group("ball"):
+	if body.is_in_group("ball"):
 		var speed: float = 12.0
 		var dir := Vector3(0.0, 0.2, 1.0).normalized()
 		if body is RigidBody3D:
@@ -96,7 +96,7 @@ func _on_stump_hit(body: Node, stump_node: RigidBody3D) -> void:
 		shatter_wickets(stump_node, speed, dir)
 
 func _on_bail_hit(body: Node, bail_node: RigidBody3D) -> void:
-	if body is CricketBall or body.is_in_group("ball"):
+	if body.is_in_group("ball"):
 		var speed: float = 10.0
 		var dir := Vector3(0.0, 0.2, 1.0).normalized()
 		if body is RigidBody3D:

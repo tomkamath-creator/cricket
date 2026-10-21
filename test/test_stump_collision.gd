@@ -2,25 +2,25 @@
 # Headless unit test suite for wickets, stumps and bails physical dislodging
 class_name TestStumpCollision
 
+const StumpsSet = preload("res://scripts/physics/stumps_set.gd")
+
 static func run_all_tests() -> bool:
 	var passed: bool = true
 	print("--- Running TestStumpCollision ---")
 	
-	var stumps_scene := load("res://scenes/stumps_set.tscn") as PackedScene
+	var stumps_scene: PackedScene = load("res://scenes/stumps_set.tscn")
 	if stumps_scene == null:
 		printerr("  [FAIL] Could not load stumps_set.tscn")
 		return false
 		
-	var stumps_instance := stumps_scene.instantiate() as StumpsSet
+	var stumps_instance: StumpsSet = stumps_scene.instantiate() as StumpsSet
 	if stumps_instance == null:
 		printerr("  [FAIL] Could not instantiate StumpsSet")
 		return false
 
-	# Add to tree temporarily for _ready execution
-	var tree := Engine.get_main_loop() as SceneTree
-	if tree and tree.root:
-		tree.root.add_child(stumps_instance)
-		
+	# Explicitly call _ready to initialize children array without needing active scene window
+	stumps_instance._ready()
+
 	# Test 1: Verify 3 Stumps and 2 Bails found
 	if not _assert_true(stumps_instance.stumps.size() == 3, "StumpsSet found exactly 3 stumps"):
 		passed = false
@@ -32,20 +32,19 @@ static func run_all_tests() -> bool:
 		passed = false
 
 	# Test 3: Trigger Shatter
-	var middle_stump := stumps_instance.stumps[1]
-	stumps_instance.shatter_wickets(middle_stump, 25.0, Vector3(0.0, 0.2, 1.0))
-	if not _assert_true(stumps_instance.is_broken(), "Stumps are broken after shatter_wickets call"):
-		passed = false
+	if stumps_instance.stumps.size() >= 2:
+		var middle_stump: RigidBody3D = stumps_instance.stumps[1]
+		stumps_instance.shatter_wickets(middle_stump, 25.0, Vector3(0.0, 0.2, 1.0))
+		if not _assert_true(stumps_instance.is_broken(), "Stumps are broken after shatter_wickets call"):
+			passed = false
 
-	# Test 4: Reset Stumps
-	stumps_instance.reset_wickets()
-	if not _assert_true(not stumps_instance.is_broken(), "Stumps are restored after reset_wickets call"):
-		passed = false
+		# Test 4: Reset Stumps
+		stumps_instance.reset_wickets()
+		if not _assert_true(not stumps_instance.is_broken(), "Stumps are restored after reset_wickets call"):
+			passed = false
 
 	# Cleanup
-	if stumps_instance.get_parent():
-		stumps_instance.get_parent().remove_child(stumps_instance)
-	stumps_instance.queue_free()
+	stumps_instance.free()
 
 	return passed
 

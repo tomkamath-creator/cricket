@@ -67,8 +67,8 @@ func _build_crease_markings() -> void:
 	white_mat.roughness = 0.4
 	
 	# Both ends: Striker (Z = +10.06) and Bowler (Z = -10.06)
-	var ends := [GameConstants.PITCH_LENGTH * 0.5, -GameConstants.PITCH_LENGTH * 0.5]
-	for z_end in ends:
+	var ends: Array[float] = [GameConstants.PITCH_LENGTH * 0.5, -GameConstants.PITCH_LENGTH * 0.5]
+	for z_end: float in ends:
 		var sign_dir: float = -1.0 if z_end > 0 else 1.0
 		
 		# 1. Bowling Crease (through the stumps, width 2.64m)
@@ -77,13 +77,14 @@ func _build_crease_markings() -> void:
 		lines_node.add_child(bowl_crease)
 		
 		# 2. Popping Crease (1.22m in front of bowling crease, width 3.66m)
-		var popping_z := z_end + (sign_dir * GameConstants.POPPING_CREASE_OFFSET)
+		var popping_z: float = z_end + (sign_dir * GameConstants.POPPING_CREASE_OFFSET)
 		var pop_crease := _create_line_mesh(Vector3(3.66, 0.005, 0.06), white_mat)
 		pop_crease.position = Vector3(0.0, 0.003, popping_z)
 		lines_node.add_child(pop_crease)
 		
 		# 3. Return Creases (perpendicular to bowling crease, 2.44m long)
-		for side in [-1.32, 1.32]:
+		var sides: Array[float] = [-1.32, 1.32]
+		for side: float in sides:
 			var ret_crease := _create_line_mesh(Vector3(0.05, 0.005, 2.44), white_mat)
 			ret_crease.position = Vector3(side, 0.003, z_end + (sign_dir * 0.61))
 			lines_node.add_child(ret_crease)
