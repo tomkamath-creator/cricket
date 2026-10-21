@@ -71,8 +71,13 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
+      - name: Configure Android SDK & Build Tools in PATH
+        run: |
+          BUILD_TOOLS_VERSION=$(ls /usr/local/lib/android/sdk/build-tools | tail -n 1)
+          echo "/usr/local/lib/android/sdk/build-tools/$BUILD_TOOLS_VERSION" >> $GITHUB_PATH
+          echo "/usr/local/lib/android/sdk/platform-tools" >> $GITHUB_PATH
+          echo "ANDROID_HOME=/usr/local/lib/android/sdk" >> $GITHUB_ENV
+          echo "ANDROID_SDK_ROOT=/usr/local/lib/android/sdk" >> $GITHUB_ENV
 
       - name: Cache Godot Binary & Export Templates
         id: cache-godot-templates
@@ -106,12 +111,19 @@ jobs:
         run: |
           keytool -keyalg RSA -genkeypair -alias androiddebugkey -keypass android -keystore debug.keystore -storepass android -dname "CN=Android Debug,O=Android,C=US" -validity 9999 -deststoretype pkcs12
 
-      - name: Configure Debug Keystore in Export Presets
+      - name: Configure Godot Editor Settings for Android Export
         run: |
-          KEYSTORE_PATH="$(pwd)/debug.keystore"
-          sed -i "s|keystore/debug=\"\"|keystore/debug=\"$KEYSTORE_PATH\"|g" export_presets.cfg
-          sed -i 's|keystore/debug_user=""|keystore/debug_user="androiddebugkey"|g' export_presets.cfg
-          sed -i 's|keystore/debug_password=""|keystore/debug_password="android"|g' export_presets.cfg
+          mkdir -p ~/.config/godot
+          cat <<EOF > ~/.config/godot/editor_settings-4.tres
+          [gd_resource type="EditorSettings" format=3]
+
+          [resource]
+          export/android/android_sdk_path = "/usr/local/lib/android/sdk"
+          export/android/debug_keystore = "$(pwd)/debug.keystore"
+          export/android/debug_keystore_user = "androiddebugkey"
+          export/android/debug_keystore_pass = "android"
+          export/android/force_system_user = false
+          EOF
 
       - name: Import Godot Project
         run: |
