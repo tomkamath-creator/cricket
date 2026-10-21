@@ -4,7 +4,7 @@ extends SceneTree
 
 func _init() -> void:
 	print("==================================================")
-	print("   CRICSTRIKE 3D - HEADLESS TEST RUNNER (AUDITED)  ")
+	print("   CRICSTRIKE 3D - HEADLESS TEST RUNNER (PHASE 3)  ")
 	print("==================================================")
 	
 	var all_passed: bool = true
@@ -13,7 +13,10 @@ func _init() -> void:
 		"res://test/test_timing_engine.gd",
 		"res://test/test_stump_collision.gd",
 		"res://test/test_ai_bowler.gd",
-		"res://test/test_bowling_meters.gd"
+		"res://test/test_bowling_meters.gd",
+		"res://test/test_umpire_rules.gd",
+		"res://test/test_scoreboard.gd",
+		"res://test/test_fielder_state.gd"
 	]
 	
 	for path in test_paths:
@@ -39,7 +42,7 @@ func _init() -> void:
 
 	print("==================================================")
 	if all_passed:
-		print("   ALL TESTS PASSED SUCCESSFULLY! (AUDIT VERIFIED) ")
+		print("   ALL TESTS PASSED SUCCESSFULLY! (PHASE 3 READY) ")
 		print("==================================================")
 		quit(0)
 	else:

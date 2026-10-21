@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://mainarena001"]
+[gd_scene load_steps=15 format=3 uid="uid://mainarena001"]
 
 [ext_resource type="Script" path="res://scripts/arena/pitch_arena.gd" id="1_arena"]
 [ext_resource type="Script" path="res://scripts/arena/stadium_builder.gd" id="2_stadium"]
@@ -9,6 +9,9 @@
 [ext_resource type="PackedScene" uid="uid://uihud001" path="res://scenes/ui_hud.tscn" id="7_hud"]
 [ext_resource type="PackedScene" uid="uid://pitchmarker001" path="res://scenes/pitch_marker.tscn" id="8_marker"]
 [ext_resource type="Script" path="res://scripts/bowling/bowling_controller.gd" id="9_bowling"]
+[ext_resource type="Script" path="res://scripts/fielding/fielding_manager.gd" id="10_fieldmgr"]
+[ext_resource type="PackedScene" uid="uid://fielder001" path="res://scenes/fielder.tscn" id="11_fielder"]
+[ext_resource type="Script" path="res://scripts/match/match_controller.gd" id="12_match"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_1"]
 sky_top_color = Color(0.24, 0.52, 0.88, 1)
@@ -62,6 +65,31 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.2, 0.02, 5.5)
 script = ExtResource("9_bowling")
 ball_ref = NodePath("../CricketBall")
 pitch_marker = NodePath("../PitchMarker")
+
+[node name="FieldingManager" type="Node3D" parent="." node_paths=PackedStringArray("ball_ref")]
+script = ExtResource("10_fieldmgr")
+ball_ref = NodePath("../CricketBall")
+
+[node name="Fielder1" parent="FieldingManager" instance=ExtResource("11_fielder")]
+[node name="Fielder2" parent="FieldingManager" instance=ExtResource("11_fielder")]
+[node name="Fielder3" parent="FieldingManager" instance=ExtResource("11_fielder")]
+[node name="Fielder4" parent="FieldingManager" instance=ExtResource("11_fielder")]
+[node name="Fielder5" parent="FieldingManager" instance=ExtResource("11_fielder")]
+[node name="Fielder6" parent="FieldingManager" instance=ExtResource("11_fielder")]
+[node name="Fielder7" parent="FieldingManager" instance=ExtResource("11_fielder")]
+[node name="Fielder8" parent="FieldingManager" instance=ExtResource("11_fielder")]
+[node name="Fielder9" parent="FieldingManager" instance=ExtResource("11_fielder")]
+[node name="Fielder10" parent="FieldingManager" instance=ExtResource("11_fielder")]
+[node name="Fielder11" parent="FieldingManager" instance=ExtResource("11_fielder")]
+
+[node name="MatchController" type="Node" parent="." node_paths=PackedStringArray("ball_ref", "batsman_ref", "bowling_controller", "fielding_manager", "scoreboard_ui", "wagon_wheel_view")]
+script = ExtResource("12_match")
+ball_ref = NodePath("../CricketBall")
+batsman_ref = NodePath("../Batsman")
+bowling_controller = NodePath("../BowlingController")
+fielding_manager = NodePath("../FieldingManager")
+scoreboard_ui = NodePath("../BattingHUD/ScoreboardUI")
+wagon_wheel_view = NodePath("../BattingHUD/WagonWheelView")
 
 [node name="BroadcastCamera" type="Camera3D" parent="." node_paths=PackedStringArray("ball_target", "batsman_target")]
 transform = Transform3D(1, 0, 0, 0, 0.978148, 0.207912, 0, -0.207912, 0.978148, 0, 1.85, 13.8)

@@ -1,0 +1,91 @@
+[gd_scene load_steps=2 format=3 uid="uid://scoreboard001"]
+
+[ext_resource type="Script" path="res://scripts/ui/scoreboard_ui.gd" id="1_scoreui"]
+
+[node name="ScoreboardUI" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 18.0
+offset_top = 18.0
+offset_right = 460.0
+offset_bottom = 118.0
+script = ExtResource("1_scoreui")
+
+[node name="ScorePanel" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ScorePanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 6.0
+offset_right = -10.0
+offset_bottom = -6.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 4
+
+[node name="TopRow" type="HBoxContainer" parent="ScorePanel/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="TeamScoreLabel" type="Label" parent="ScorePanel/VBoxContainer/TopRow"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "IND  0 / 0"
+
+[node name="OversLabel" type="Label" parent="ScorePanel/VBoxContainer/TopRow"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+text = "(0.0 / 5 ov)"
+
+[node name="CRRLabel" type="Label" parent="ScorePanel/VBoxContainer/TopRow"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.92, 1, 1)
+theme_override_font_sizes/font_size = 13
+text = "CRR: 0.00"
+
+[node name="WagonWheelButton" type="Button" parent="ScorePanel/VBoxContainer/TopRow"]
+layout_mode = 2
+size_flags_horizontal = 10
+theme_override_font_sizes/font_size = 12
+text = "Wagon Wheel"
+
+[node name="PlayerRow" type="HBoxContainer" parent="ScorePanel/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="StrikerLabel" type="Label" parent="ScorePanel/VBoxContainer/PlayerRow"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Rohit*  0 (0)"
+
+[node name="NonStrikerLabel" type="Label" parent="ScorePanel/VBoxContainer/PlayerRow"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Virat  0 (0)"
+
+[node name="BowlerLabel" type="Label" parent="ScorePanel/VBoxContainer/PlayerRow"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Bowl: Starc  0.0-0-0-0"
+
+[node name="OverTrackerRow" type="HBoxContainer" parent="ScorePanel/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Title" type="Label" parent="ScorePanel/VBoxContainer/OverTrackerRow"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+text = "This Over:"
+
+[node name="BallsContainer" type="HBoxContainer" parent="ScorePanel/VBoxContainer/OverTrackerRow"]
+layout_mode = 2
+theme_override_constants/separation = 6
