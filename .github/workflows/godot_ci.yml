@@ -7,6 +7,9 @@ on:
     branches: [ main, master ]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   test-headless:
     name: Run Headless Physics & Timing Tests
@@ -109,7 +112,7 @@ jobs:
 
       - name: Generate Debug Keystore
         run: |
-          keytool -keyalg RSA -genkeypair -alias androiddebugkey -keypass android -keystore debug.keystore -storepass android -dname "CN=Android Debug,O=Android,C=US" -validity 9999 -deststoretype pkcs12
+          keytool -keyalg RSA -keysize 2048 -genkeypair -alias androiddebugkey -keypass android -keystore debug.keystore -storepass android -dname "CN=Android Debug,O=Android,C=US" -validity 10000 -deststoretype pkcs12
 
       - name: Configure Godot Editor Settings for Android Export
         run: |
@@ -132,7 +135,13 @@ jobs:
       - name: Export Android Debug APK
         run: |
           mkdir -p build
-          godot --headless --export-debug "Android" build/cricstrike_3d.apk
+          godot --headless --export-debug "Android" build/cricstrike_3d_raw.apk
+
+      - name: Zipalign & Sign APK with v1, v2, v3 Signature Schemes
+        run: |
+          zipalign -v -f -p 4 build/cricstrike_3d_raw.apk build/cricstrike_3d.apk
+          apksigner sign --ks debug.keystore --ks-pass pass:android --ks-key-alias androiddebugkey --key-pass pass:android --v1-signing-enabled true --v2-signing-enabled true --v3-signing-enabled true build/cricstrike_3d.apk
+          apksigner verify --verbose build/cricstrike_3d.apk
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
@@ -140,3 +149,18 @@ jobs:
           name: cricstrike-3d-android-apk
           path: build/cricstrike_3d.apk
           retention-days: 14
+
+      - name: Publish Direct APK Download Release
+        uses: softprops/action-gh-release@v2
+        if: github.ref == 'refs/heads/main'
+        with:
+          tag_name: v1.0.0-phase1
+          name: "CricStrike 3D Phase 1 Android Build"
+          body: |
+            ### CricStrike 3D - Phase 1 Android APK
+            - **Direct Download**: Tap `cricstrike_3d.apk` below directly to install on your phone.
+            - **Signatures**: Verified with APK Signature Schemes v1, v2, and v3 (compatible with Android 8 - 15).
+            - **Architectures**: arm64-v8a + armeabi-v7a.
+          files: build/cricstrike_3d.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
