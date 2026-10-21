@@ -1,10 +1,11 @@
 # TestStumpCollision.gd - CricStrike 3D
 # Headless unit test suite for wickets, stumps and bails physical dislodging
 class_name TestStumpCollision
+extends RefCounted
 
 const StumpsSet = preload("res://scripts/physics/stumps_set.gd")
 
-static func run_all_tests() -> bool:
+func run_all_tests() -> bool:
 	var passed: bool = true
 	print("--- Running TestStumpCollision ---")
 	
@@ -48,7 +49,7 @@ static func run_all_tests() -> bool:
 
 	return passed
 
-static func _assert_true(condition: bool, description: String) -> bool:
+func _assert_true(condition: bool, description: String) -> bool:
 	if condition:
 		print("  [PASS] %s" % description)
 		return true

@@ -1,13 +1,14 @@
 # TestAIBowler.gd - CricStrike 3D
 # Headless unit test suite for AI Bowler delivery planning, difficulty modes & pitch adaptation
 class_name TestAIBowler
+extends RefCounted
 
 const GameConstants = preload("res://scripts/core/game_constants.gd")
 const BowlerTypes = preload("res://scripts/bowling/bowler_types.gd")
 const PitchConditions = preload("res://scripts/core/pitch_conditions.gd")
 const AIBowler = preload("res://scripts/bowling/ai_bowler.gd")
 
-static func run_all_tests() -> bool:
+func run_all_tests() -> bool:
 	var passed: bool = true
 	print("--- Running TestAIBowler ---")
 	
@@ -56,7 +57,7 @@ static func run_all_tests() -> bool:
 
 	return passed
 
-static func _assert_true(condition: bool, description: String) -> bool:
+func _assert_true(condition: bool, description: String) -> bool:
 	if condition:
 		print("  [PASS] %s" % description)
 		return true

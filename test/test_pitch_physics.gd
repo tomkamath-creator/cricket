@@ -1,11 +1,12 @@
 # TestPitchPhysics.gd - CricStrike 3D
 # Headless unit test suite for 3D pitch arena dimensions and surface bounce physics
 class_name TestPitchPhysics
+extends RefCounted
 
 const GameConstants = preload("res://scripts/core/game_constants.gd")
 const PitchConditions = preload("res://scripts/core/pitch_conditions.gd")
 
-static func run_all_tests() -> bool:
+func run_all_tests() -> bool:
 	var passed: bool = true
 	print("--- Running TestPitchPhysics ---")
 	
@@ -19,7 +20,7 @@ static func run_all_tests() -> bool:
 	if not _assert_equal(GameConstants.BALL_MASS_KG, 0.160, "Ball regulation mass == 0.160kg"):
 		passed = false
 
-	# Test 2: Pitch Conditions Restitution & Friction
+	# Test 2: Pitch Conditions Restitution & Friction via Constructor Instantiation (new)
 	var green_pitch: PitchConditions = PitchConditions.new(GameConstants.PitchType.GREEN)
 	if not _assert_true(green_pitch.restitution > 0.8, "Green pitch has high bounce restitution (> 0.80)"):
 		passed = false
@@ -46,7 +47,7 @@ static func run_all_tests() -> bool:
 
 	return passed
 
-static func _assert_equal(actual: float, expected: float, description: String, tolerance: float = 0.001) -> bool:
+func _assert_equal(actual: float, expected: float, description: String, tolerance: float = 0.001) -> bool:
 	if abs(actual - expected) <= tolerance:
 		print("  [PASS] %s" % description)
 		return true
@@ -54,7 +55,7 @@ static func _assert_equal(actual: float, expected: float, description: String, t
 		printerr("  [FAIL] %s: Expected %.4f, Got %.4f" % [description, expected, actual])
 		return false
 
-static func _assert_true(condition: bool, description: String) -> bool:
+func _assert_true(condition: bool, description: String) -> bool:
 	if condition:
 		print("  [PASS] %s" % description)
 		return true

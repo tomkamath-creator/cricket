@@ -1,10 +1,11 @@
 # TestBowlingMeters.gd - CricStrike 3D
 # Headless unit test suite for oscillating swing & speed meters
 class_name TestBowlingMeters
+extends RefCounted
 
 const BowlingMeters = preload("res://scripts/bowling/bowling_meters.gd")
 
-static func run_all_tests() -> bool:
+func run_all_tests() -> bool:
 	var passed: bool = true
 	print("--- Running TestBowlingMeters ---")
 	
@@ -46,7 +47,7 @@ static func run_all_tests() -> bool:
 
 	return passed
 
-static func _assert_true(condition: bool, description: String) -> bool:
+func _assert_true(condition: bool, description: String) -> bool:
 	if condition:
 		print("  [PASS] %s" % description)
 		return true

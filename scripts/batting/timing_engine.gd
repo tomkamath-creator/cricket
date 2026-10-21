@@ -25,6 +25,38 @@ class TimingResult:
 		feedback_text = "MISSED"
 		rating_color = Color(0.6, 0.6, 0.6)
 
+	func to_dict() -> Dictionary:
+		return {
+			"rating": rating,
+			"delta_ms": delta_ms,
+			"exit_velocity": exit_velocity,
+			"exit_speed_kmh": exit_speed_kmh,
+			"launch_angle_deg": launch_angle_deg,
+			"shot_name": shot_name,
+			"is_edge": is_edge,
+			"feedback_text": feedback_text,
+			"rating_color": rating_color
+		}
+
+# Convenience forwarding methods for shot direction and data
+static func vector_to_direction(joystick_vector: Vector2) -> GameConstants.ShotDirection:
+	return ShotLibrary.vector_to_direction(joystick_vector)
+
+static func get_shot(dir: GameConstants.ShotDirection, elev: GameConstants.ShotElevation) -> ShotLibrary.ShotData:
+	return ShotLibrary.get_shot(dir, elev)
+
+# Instance wrapper for evaluate_contact
+func evaluate(
+	ball_pos: Vector3,
+	ball_vel: Vector3,
+	contact_plane_z: float,
+	shot_data: ShotLibrary.ShotData,
+	difficulty: GameConstants.Difficulty = GameConstants.Difficulty.MEDIUM,
+	batsman_timing_delta_ms_override: float = 0.0,
+	use_override: bool = false
+) -> TimingResult:
+	return evaluate_contact(ball_pos, ball_vel, contact_plane_z, shot_data, difficulty, batsman_timing_delta_ms_override, use_override)
+
 # Difficulty thresholds [Perfect_ms, EarlyLate_ms, TooEarlyLate_ms]
 static func get_difficulty_windows(diff: GameConstants.Difficulty) -> Dictionary:
 	match diff:
