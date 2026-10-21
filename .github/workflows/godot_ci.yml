@@ -154,12 +154,20 @@ jobs:
         uses: softprops/action-gh-release@v2
         if: github.ref == 'refs/heads/main'
         with:
-          tag_name: v1.4.0-phase4
-          name: "CricStrike 3D Phase 4 Android Build"
+          tag_name: v1.5.0-release
+          name: "CricStrike 3D Complete Game v1.5.0 (All Phases)"
           body: |
-            ### CricStrike 3D - Phase 4 Android APK
-            - **Phase 4 Complete**: 3D Locker Room & Customization Studio, 360-degree interactive model viewer, procedural shaders for skin tones and team kits, bone scaling builds (Slim, Athletic, Heavy), swappable equipment (English/Kashmir willow, bat decals, colored pads/helmets/grills), and instant offline `user://custom_players.json` persistence.
-            - **Direct Download**: Tap `cricstrike_3d.apk` below directly to install on your phone.
+            ### CricStrike 3D - Full Release Android APK (v1.5.0)
+            100% Offline 3D Mobile Cricket Game inspired by "Real Cricket" built in Godot Engine 4.3.
+
+            #### Features Included:
+            - **Phase 1: 3D Pitch Arena & Physics**: Regulation 20.12m pitch, shatterable stumps & bails, aerodynamic seam & swing ball physics with 4 pitch conditions (Flat, Green, Dusty, Wet), 8-way directional batting timing window engine, mobile virtual joystick.
+            - **Phase 2: Bowling Engine & AI**: Pitch delivery marker with length zones (Yorker, Full, Good Length, Short), oscillating swing & speed meters, 4 AI difficulty tiers (Easy, Medium, Hard, Legend).
+            - **Phase 3: Fielding Engine & Match Loop**: 11-player fielder AI state machines (Balanced, Attacking, Defensive presets), umpire decision rules (Bowled, Caught, LBW 3-point Hawkeye, No Balls, Wides, Boundaries), TV broadcast scoreboard & radial 360° wagon wheel.
+            - **Phase 4: Player Locker Room & Customizer**: 3D customization studio with 360° orbit viewer, procedural skin tones, team kits (India, Australia, England, Test whites), bone scaling builds (Slim, Athletic, Heavy), bat willows & stickers, and local `user://custom_players.json` persistence.
+            - **Phase 5: Offline Game Modes & Menus**: Main Menu hub, Quick Match, Tournament Mode with live Net Run Rate (NRR) points table & knockout stages, Super Over high-stakes mode, and Offline Franchise Player Auction with competitive CPU bot bidders.
+
+            - **Direct Download**: Tap `cricstrike_3d.apk` below directly to install on your Android device.
             - **Signatures**: Verified with APK Signature Schemes v1, v2, and v3 (compatible with Android 8 - 15).
             - **Architectures**: arm64-v8a + armeabi-v7a.
           files: build/cricstrike_3d.apk
