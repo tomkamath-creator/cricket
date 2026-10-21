@@ -1,5 +1,5 @@
 # BattingHUD.gd - CricStrike 3D
-# Complete Touch UI, Virtual Controls, Timing Feedback HUD & Debug Delivery Controls
+# Complete Touch UI, Virtual Controls, Timing Feedback HUD & Bowling System Integration
 class_name BattingHUD
 extends CanvasLayer
 
@@ -7,6 +7,16 @@ signal deliver_requested(speed_kmh: float, swing: float, seam: float, target_pos
 signal pitch_condition_changed(new_type: GameConstants.PitchType)
 signal difficulty_changed(new_diff: GameConstants.Difficulty)
 signal camera_toggle_requested()
+signal role_toggled(is_bowling: bool)
+
+const GameConstants = preload("res://scripts/core/game_constants.gd")
+const ShotLibrary = preload("res://scripts/batting/shot_library.gd")
+const TimingEngine = preload("res://scripts/batting/timing_engine.gd")
+const BattingController = preload("res://scripts/batting/batting_controller.gd")
+const CricketBall = preload("res://scripts/physics/cricket_ball.gd")
+const BroadcastCamera = preload("res://scripts/camera/broadcast_camera.gd")
+const VirtualJoystick = preload("res://scripts/ui/virtual_joystick.gd")
+const BowlingMetersUI = preload("res://scripts/ui/bowling_meters_ui.gd")
 
 @export var batsman: BattingController
 @export var ball: CricketBall
@@ -14,6 +24,8 @@ signal camera_toggle_requested()
 
 # UI Elements
 @onready var joystick: VirtualJoystick = $BottomLeftControls/VirtualJoystick
+@onready var bottom_left_controls: Control = $BottomLeftControls
+@onready var bottom_right_controls: Control = $BottomRightControls
 @onready var shot_name_label: Label = $TopCenter/ShotNameLabel
 @onready var timing_banner: Label = $CenterContainer/TimingBanner
 @onready var stats_label: Label = $TopCenter/StatsLabel
@@ -23,9 +35,12 @@ signal camera_toggle_requested()
 @onready var pitch_btn: Button = $TopRightControls/PitchButton
 @onready var difficulty_btn: Button = $TopRightControls/DifficultyButton
 @onready var camera_btn: Button = $TopRightControls/CameraButton
+@onready var role_btn: Button = $TopRightControls/RoleButton
+@onready var bowling_meters_ui: BowlingMetersUI = $BowlingMetersUI
 
 var current_difficulty: GameConstants.Difficulty = GameConstants.Difficulty.MEDIUM
 var current_pitch_type: GameConstants.PitchType = GameConstants.PitchType.FLAT
+var is_bowling_role: bool = false
 
 # Sample delivery presets for testing
 var _delivery_presets: Array[Dictionary] = [
@@ -56,6 +71,8 @@ func _ready() -> void:
 		difficulty_btn.pressed.connect(_on_cycle_difficulty)
 	if camera_btn:
 		camera_btn.pressed.connect(func(): camera_toggle_requested.emit())
+	if role_btn:
+		role_btn.pressed.connect(_on_toggle_role)
 		
 	# Connect Batsman signals
 	if batsman:
@@ -70,19 +87,44 @@ func _ready() -> void:
 	_update_hud_display()
 	_hide_timing_banner()
 
+func _on_toggle_role() -> void:
+	is_bowling_role = not is_bowling_role
+	if is_bowling_role:
+		role_btn.text = "Role: Bowling"
+		bottom_left_controls.visible = false
+		bottom_right_controls.visible = false
+		shot_name_label.text = "Bowling Mode Active"
+		stats_label.text = "Use meters below to control line, length, swing & speed"
+		if camera_controller:
+			camera_controller.set_camera_mode(BroadcastCamera.CameraMode.BOWLER_END)
+	else:
+		role_btn.text = "Role: Batting"
+		bottom_left_controls.visible = true
+		bottom_right_controls.visible = true
+		shot_name_label.text = "Batting Mode Active"
+		stats_label.text = "Tap BOWL to face delivery | Use Joystick to aim shot"
+		if bowling_meters_ui:
+			bowling_meters_ui.hide_meters()
+		if camera_controller:
+			camera_controller.set_camera_mode(BroadcastCamera.CameraMode.BEHIND_BATSMAN)
+			
+	role_toggled.emit(is_bowling_role)
+
 func _on_joystick_vector_changed(vector: Vector2) -> void:
-	if batsman:
+	if batsman and not is_bowling_role:
 		batsman.set_joystick_direction(vector)
 
 func _on_shot_sector_changed(direction: GameConstants.ShotDirection) -> void:
-	var grounded_shot := ShotLibrary.get_shot(direction, GameConstants.ShotElevation.GROUNDED)
-	var lofted_shot := ShotLibrary.get_shot(direction, GameConstants.ShotElevation.LOFTED)
+	if is_bowling_role:
+		return
+	var grounded_shot: ShotLibrary.ShotData = ShotLibrary.get_shot(direction, GameConstants.ShotElevation.GROUNDED)
+	var lofted_shot: ShotLibrary.ShotData = ShotLibrary.get_shot(direction, GameConstants.ShotElevation.LOFTED)
 	if shot_name_label:
 		shot_name_label.text = "Target: %s / %s" % [grounded_shot.name, lofted_shot.name]
 
 func _on_shot_button_pressed(elevation: GameConstants.ShotElevation) -> void:
-	if batsman:
-		var result := batsman.trigger_shot(elevation)
+	if batsman and not is_bowling_role:
+		var result: TimingEngine.TimingResult = batsman.trigger_shot(elevation)
 		if result:
 			_display_timing_feedback(result)
 

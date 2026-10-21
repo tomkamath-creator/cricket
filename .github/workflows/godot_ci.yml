@@ -154,10 +154,11 @@ jobs:
         uses: softprops/action-gh-release@v2
         if: github.ref == 'refs/heads/main'
         with:
-          tag_name: v1.0.0-phase1
-          name: "CricStrike 3D Phase 1 Android Build"
+          tag_name: v1.2.0-phase2
+          name: "CricStrike 3D Phase 2 Android Build"
           body: |
-            ### CricStrike 3D - Phase 1 Android APK
+            ### CricStrike 3D - Phase 2 Android APK
+            - **Phase 2 Complete**: Full Bowling System, AI Bowler (Easy/Medium/Hard/Legend), Interactive Pitch Marker & Swing/Speed Meters.
             - **Direct Download**: Tap `cricstrike_3d.apk` below directly to install on your phone.
             - **Signatures**: Verified with APK Signature Schemes v1, v2, and v3 (compatible with Android 8 - 15).
             - **Architectures**: arm64-v8a + armeabi-v7a.

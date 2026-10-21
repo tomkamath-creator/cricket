@@ -5,148 +5,58 @@ A production-quality, 100% offline 3D mobile cricket game inspired by *Real Cric
 ---
 
 ## 🎯 Phase 1 Completed: 3D Pitch Arena, Ball Physics & Batting Timing Engine
-
-### 1. 3D Stadium & Regulation 20.12m Pitch Arena (`scripts/arena/`)
-- **Pitch Strip**: Regulation 20.12-meter (22 yards) length with 3.05-meter width.
-- **Crease Markings**:
-  - Bowling creases ($Z = \pm 10.06\text{m}$, width $2.64\text{m}$).
-  - Popping creases ($1.22\text{m}$ in front of bowling creases, width $3.66\text{m}$).
-  - Return creases extending $2.44\text{m}$.
-- **Stadium Architecture**:
-  - Circular/elliptical outfield grass turf ($R = 80\text{m}$).
-  - Boundary foam cushion rope ($R_x = 68\text{m}, R_z = 72\text{m}$).
-  - Dual sight screens behind bowler and striker wickets.
-  - 3-tiered grandstand perimeter and 4 corner floodlight towers.
-- **Pitch Conditions Engine (`scripts/core/pitch_conditions.gd`)**:
-  - **Green**: High bounce (restitution $0.82$), high seam deviation, boosted swing in damp air.
-  - **Dusty**: Low bounce (restitution $0.64$), abrasive spin grip, variable turn.
-  - **Flat**: True, predictable bounce (restitution $0.80$), consistent pace, batter's paradise.
-  - **Wet**: Skidding low bounce (restitution $0.58$), reduced spin, high skid factor.
+- **Regulation 20.12m Pitch Arena**: Stumps, bails, popping creases, boundary cushions, sight screens, and stadium grandstand.
+- **Physical Wickets**: 3 individual stumps & 2 bails with collision dislodging.
+- **Aerodynamic Ball Physics**: Quadratic drag, Magnus effect swing, pitch surface bounce modeling (Green, Dusty, Flat, Wet).
+- **8-Way Directional Batting**: 8 compass directions x 2 elevation levels (Grounded vs Lofted) with millisecond timing ratings (`PERFECT`, `EARLY`, `LATE`, `TOO_EARLY`, `TOO_LATE`, `MISSED`, and Edges).
+- **Broadcast Camera**: 4 dynamic camera tracking angles (`BEHIND_BATSMAN`, `BROADCAST_SIDE`, `BALL_TRACKING`, `BOWLER_END`).
 
 ---
 
-### 2. Physical Wickets & Stumps with Dislodging (`scripts/physics/stumps_set.gd`)
-- 3 individual rigid body stumps (**Off**, **Middle**, **Leg**) regulation height ($0.711\text{m} / 28\text{"}$).
-- 2 resting bails on top grooves.
-- Realistic collision impulse detection:
-  - Direct hits dislodge the bails with explosive upward and backward angular torque.
-  - Stumps wobble, tilt, and tumble dynamically upon impact.
-  - Instant state reset functionality for subsequent deliveries.
+## 🎯 Phase 2 Completed: Bowling System, AI Bowler & Difficulty Engine
 
----
+### 1. Interactive 3D Pitch Delivery Marker (`scripts/bowling/pitch_marker.gd`)
+- Drag-and-drop / touch target placement on the pitch strip.
+- Length classification:
+  - **Yorker**: $8.2\text{m} - 9.5\text{m}$ (aiming at the blockhole and batsman's toes).
+  - **Full Length**: $6.5\text{m} - 8.0\text{m}$ (tempting drive length).
+  - **Good Length**: $4.5\text{m} - 6.5\text{m}$ (corridor of uncertainty, inducing edges and seams).
+  - **Short / Bouncer**: $1.5\text{m} - 4.5\text{m}$ (chest-height bouncers and ribs attacks).
+- Dynamic difficulty-based marker fading.
 
-### 3. Aerodynamic Ball Physics Engine (`scripts/physics/cricket_ball.gd`)
-- Standard $160\text{g}$ regulation mass and $3.6\text{cm}$ radius.
-- Real-time **aerodynamic quadratic drag** ($F_d = \frac{1}{2} C_d \rho A v^2$).
-- **Magnus & asymmetric boundary layer swing force** simulating conventional and reverse swing.
-- Dynamic bounce calculation upon pitch impact factoring in seam tilt, spin vector, and pitch conditions.
-- Continuous collision detection (`continuous_cd = true`) to prevent tunneling at high speeds ($150+\text{ km/h}$).
+### 2. Oscillating Swing & Speed Meters (`scripts/bowling/bowling_meters.gd`)
+- **Step 1**: Line & Length target selection.
+- **Step 2**: Oscillating swing meter (stop needle in the green zone for maximum outswing, inswing, off-break, or leg-break).
+- **Step 3**: Speed power meter sweeping between $110\text{ km/h}$ and $152\text{ km/h}$ (hitting the peak sweetspot releases maximum pace without line dispersion).
 
----
+### 3. Advanced AI Bowling Engine (`scripts/bowling/ai_bowler.gd`)
+Features 4 distinct difficulty modes that dynamically adjust physics and tactics:
+- **Easy**: Wide batting timing window ($\pm 45\text{ms}$), static pitch marker with long display time, predictable bowling ($118 - 126\text{ km/h}$), gentle pace.
+- **Medium**: Balanced timing window ($\pm 26\text{ms}$), standard swing/seam movement ($130 - 138\text{ km/h}$), marker fades on pitch contact.
+- **Hard**: Strict timing window ($\pm 16\text{ms}$), delayed pitch marker (fades halfway through run-up), deceptive slower balls ($112\text{ km/h}$) and reverse swing ($145\text{ km/h}$), actively targets batsman's weak zone outside off-stump to induce edges.
+- **Legend / Pro**: Ultra-tight timing window ($\pm 9\text{ms}$), marker fades immediately upon bowler release ($0.18\text{s}$), express pace ($148 - 152\text{ km/h}$), lethal tactical traps (bouncers followed by toe-crushing yorkers).
+- **Pitch Surface Intelligence**:
+  - *Green Top*: AI exploits excessive seam movement and damp-air swing.
+  - *Dusty / Cracking*: AI uses off-cutters and high-grip spin deviations.
+  - *Flat Road*: AI utilizes changes of pace and yorkers in the blockhole.
+  - *Wet / Damp*: AI aims low-skid deliveries straight at the stumps for LBW/bowled.
 
-### 4. 8-Directional Batting & Millisecond Timing Window Engine (`scripts/batting/`)
-- **8-Way Directional Mapping**:
-  1. **Straight Drive / Lofted Straight Drive** (Up)
-  2. **Cover Drive / Inside-out Lofted Cover** (Up-Left)
-  3. **Square Cut / Upper Cut** (Left)
-  4. **Late Cut / Ramp Scoop** (Down-Left)
-  5. **Backfoot Defense / Helicopter Shot** (Down)
-  6. **Leg Glance / Hook Shot** (Down-Right)
-  7. **Square Leg / Pull Shot** (Right)
-  8. **On Drive / Slog Sweep** (Up-Right)
-- **Millisecond Timing Engine (`scripts/batting/timing_engine.gd`)**:
-  - Evaluates contact delta $\Delta t = t_{\text{input}} - t_{\text{sweetspot}}$.
-  - Categorizes into: `PERFECT`, `EARLY`, `LATE`, `TOO_EARLY`, `TOO_LATE`, `MISSED`.
-  - Calculates exit speed (km/h) and launch angle based on bat speed, incoming pace, restitution, and timing accuracy.
-  - Generates realistic inside/outside edges to keeper or slips on mistimed or wide balls.
-- **Difficulty Multipliers**:
-  - **Easy**: $\pm 45\text{ms}$ perfect window, $\pm 95\text{ms}$ normal.
-  - **Medium**: $\pm 26\text{ms}$ perfect window, $\pm 62\text{ms}$ normal.
-  - **Hard**: $\pm 16\text{ms}$ perfect window, $\pm 38\text{ms}$ normal.
-  - **Legend**: $\pm 9\text{ms}$ ultra-tight window, $\pm 22\text{ms}$ normal.
-
----
-
-### 5. Broadcast Camera System (`scripts/camera/broadcast_camera.gd`)
-- Multi-mode dynamic broadcast camera rig:
-  - `BEHIND_BATSMAN`: Default batting view behind the batsman.
-  - `BROADCAST_SIDE`: TV broadcast side camera panning from the stadium gantry.
-  - `BALL_TRACKING`: Follows the cricket ball on lofted hits and boundary trajectories.
-  - `BOWLER_END`: Bowler's run-up perspective looking down the pitch.
-
----
-
-### 6. Mobile Touch & Testing HUD (`scripts/ui/`)
-- **Virtual 8-direction analog joystick** on bottom-left for touch and mouse.
-- **Grounded & Lofted** buttons on bottom-right.
-- **Timing Feedback Banner**: Displays color-coded real-time feedback (`PERFECT!`, `EARLY`, `LATE`, `EDGE`).
-- **Pace & Launch Angle Telemetry**: Displays exit velocity in km/h, timing in ms, and launch angle in degrees.
-- **Interactive Debug Bar**: Instant delivery pitching button (test Full, Good Length, Yorker, Bouncer, Outswinger), pitch condition switcher, and difficulty switcher.
+### 4. Seamless Role Switching
+- Tap **Role: Batting** / **Role: Bowling** on the HUD to immediately swap between batting against the AI bowler or bowling with the interactive meters.
 
 ---
 
 ## 🚀 Headless Testing & CI (GitHub Actions)
 
-The repository includes a complete headless test runner (`test/run_tests.gd`) that runs automatically in GitHub Actions on every push/PR:
-
+Run headless physics, timing, and AI bowling tests:
 ```bash
-# Run headless tests locally using Godot 4.3:
 godot --headless --script test/run_tests.gd
 ```
 
-### GitHub Actions Workflow
-The workflow `.github/workflows/godot_ci.yml` automatically:
-1. Downloads and caches the headless Godot 4.3 engine on Ubuntu.
-2. Validates project structure and GDScript syntax.
-3. Executes `test/run_tests.gd` to test pitch geometry, aerodynamics, stumps dislodging, and timing accuracy.
+All 36 unit assertions are verified automatically on Ubuntu runners via GitHub Actions.
 
 ---
 
-## 📁 Repository Structure (Kept clean within GitHub limits)
-
-```
-├── .github/
-│   └── workflows/
-│       └── godot_ci.yml       # Automated GitHub Actions test workflow
-├── scenes/
-│   ├── cricket_ball.tscn      # RigidBody3D ball with collision
-│   ├── stumps_set.tscn        # 3 stumps + 2 bails physical set
-│   ├── batsman.tscn           # 3D Batsman with bat and swing animation
-│   ├── ui_hud.tscn            # Virtual joystick, buttons, timing meter
-│   └── main_arena.tscn        # Master 3D playable pitch arena scene
-├── scripts/
-│   ├── core/
-│   │   ├── game_constants.gd  # Dimensions, physical constants, ratings
-│   │   └── pitch_conditions.gd# Green, Dusty, Flat, Wet physics
-│   ├── physics/
-│   │   ├── cricket_ball.gd    # Ball aerodynamics, swing & bounce
-│   │   └── stumps_set.gd      # Stumps & bails dislodging mechanics
-│   ├── batting/
-│   │   ├── shot_library.gd    # 8-way shot database & trajectory angles
-│   │   ├── timing_engine.gd   # Millisecond timing window calculation
-│   │   └── batting_controller.gd # Batsman control & swing execution
-│   ├── camera/
-│   │   └── broadcast_camera.gd # Multi-mode broadcast TV camera
-│   ├── ui/
-│   │   ├── virtual_joystick.gd # 8-way mobile touch virtual joystick
-│   │   └── batting_hud.gd     # HUD overlay, telemetry & delivery tester
-│   └── arena/
-│       ├── stadium_builder.gd # 20.12m pitch, creases, stands, floodlights
-│       └── pitch_arena.gd     # Main arena coordinator
-├── test/
-│   ├── run_tests.gd           # Headless CI runner
-│   ├── test_pitch_physics.gd  # Dimensions & bounce unit tests
-│   ├── test_timing_engine.gd  # Timing window & ratings tests
-│   └── test_stump_collision.gd# Stumps shatter & reset tests
-├── project.godot              # Godot 4 project configuration
-└── icon.svg                   # Project icon
-```
-
----
-
-## 🎮 Desktop Keyboard Shortcuts
-- `Space`: Grounded Shot
-- `Shift` or `L`: Lofted Shot
-- `B`: Bowl Debug Delivery
-- `P`: Switch Pitch Condition (Green / Dusty / Flat / Wet)
-- `C`: Switch Camera View
+## 📦 Download Direct Android APK
+Download the latest verified APK directly on your phone:
+👉 **[Download CricStrike 3D APK (GitHub Release)](https://github.com/tomkamath-creator/cricket/releases)**
