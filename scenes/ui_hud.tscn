@@ -1,0 +1,140 @@
+[gd_scene load_steps=3 format=3 uid="uid://uihud001"]
+
+[ext_resource type="Script" path="res://scripts/ui/batting_hud.gd" id="1_hud"]
+[ext_resource type="Script" path="res://scripts/ui/virtual_joystick.gd" id="2_joystick"]
+
+[node name="BattingHUD" type="CanvasLayer"]
+script = ExtResource("1_hud")
+
+[node name="BottomLeftControls" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 32.0
+offset_top = -180.0
+offset_right = 192.0
+offset_bottom = -20.0
+grow_vertical = 0
+
+[node name="VirtualJoystick" type="Control" parent="BottomLeftControls"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("2_joystick")
+
+[node name="BottomRightControls" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -190.0
+offset_top = -180.0
+offset_right = -30.0
+offset_bottom = -20.0
+grow_horizontal = 0
+grow_vertical = 0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="BottomRightControls"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 12
+
+[node name="LoftedButton" type="Button" parent="BottomRightControls/VBoxContainer"]
+custom_minimum_size = Vector2(0, 68)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "LOFTED (L)"
+
+[node name="GroundedButton" type="Button" parent="BottomRightControls/VBoxContainer"]
+custom_minimum_size = Vector2(0, 68)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "GROUNDED (Space)"
+
+[node name="TopCenter" type="VBoxContainer" parent="."]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -300.0
+offset_top = 18.0
+offset_right = 300.0
+offset_bottom = 86.0
+grow_horizontal = 2
+
+[node name="ShotNameLabel" type="Label" parent="TopCenter"]
+layout_mode = 2
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.8)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 20
+text = "Target: Straight Drive / Lofted Straight Drive"
+horizontal_alignment = 1
+
+[node name="StatsLabel" type="Label" parent="TopCenter"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.95, 1, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.8)
+theme_override_font_sizes/font_size = 15
+text = "Tap BOWL to face delivery | Use Joystick to aim shot"
+horizontal_alignment = 1
+
+[node name="CenterContainer" type="CenterContainer" parent="."]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -250.0
+offset_top = -60.0
+offset_right = 250.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="TimingBanner" type="Label" parent="CenterContainer"]
+visible = false
+layout_mode = 2
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.9)
+theme_override_constants/shadow_offset_x = 3
+theme_override_constants/shadow_offset_y = 3
+theme_override_font_sizes/font_size = 42
+text = "PERFECT!"
+horizontal_alignment = 1
+
+[node name="TopRightControls" type="HBoxContainer" parent="."]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -460.0
+offset_top = 18.0
+offset_right = -18.0
+offset_bottom = 58.0
+grow_horizontal = 0
+theme_override_constants/separation = 8
+
+[node name="BowlDebugButton" type="Button" parent="TopRightControls"]
+layout_mode = 2
+text = "BOWL (B)"
+
+[node name="PitchButton" type="Button" parent="TopRightControls"]
+layout_mode = 2
+text = "Pitch: Flat"
+
+[node name="DifficultyButton" type="Button" parent="TopRightControls"]
+layout_mode = 2
+text = "Diff: Medium"
+
+[node name="CameraButton" type="Button" parent="TopRightControls"]
+layout_mode = 2
+text = "Cam (C)"

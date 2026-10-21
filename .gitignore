@@ -1,0 +1,18 @@
+# Godot 4 .gitignore
+.godot/
+*.translation
+*.import
+
+# Android export templates and build artifacts
+android/
+build/
+*.apk
+*.aab
+
+# OS & Editor
+.DS_Store
+Thumbs.db
+*.tmp
+*.log
+.vscode/
+.idea/
