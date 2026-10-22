@@ -26,19 +26,54 @@ var _bat_initial_pos: Vector3 = Vector3.ZERO
 var _idle_time: float = 0.0
 
 @onready var humanoid_model: Node3D = get_node_or_null("HumanoidModel")
-@onready var anim_player: AnimationPlayer = get_node_or_null("HumanoidModel/AnimationPlayer")
+var anim_player: AnimationPlayer
 
 func _ready() -> void:
+	_setup_character_animations()
 	if bat_node:
 		_bat_initial_rot = bat_node.rotation_degrees
 		_bat_initial_pos = bat_node.position
 	else:
-		# Search children for bat node
 		var found_bat := find_child("Bat", true, false)
 		if found_bat and found_bat is Node3D:
 			bat_node = found_bat
 			_bat_initial_rot = bat_node.rotation_degrees
 			_bat_initial_pos = bat_node.position
+
+func _setup_character_animations() -> void:
+	if humanoid_model == null:
+		humanoid_model = get_node_or_null("HumanoidModel")
+	if humanoid_model == null:
+		return
+		
+	var armature := humanoid_model.get_node_or_null("Armature")
+	if armature:
+		anim_player = armature.get_node_or_null("AnimationPlayer") as AnimationPlayer
+		if anim_player == null:
+			anim_player = AnimationPlayer.new()
+			anim_player.name = "AnimationPlayer"
+			armature.add_child(anim_player)
+			
+		var anim_lib: AnimationLibrary = load("res://assets/animations/cricket_animations.tres")
+		if anim_lib and not anim_player.has_animation_library(""):
+			anim_player.add_animation_library("", anim_lib)
+			
+		if anim_player.has_animation("stance"):
+			anim_player.play("stance")
+			
+		# Attach bat to hand bone if available
+		var skel: Skeleton3D = armature.get_node_or_null("Skeleton3D")
+		if skel and bat_node and bat_node.get_parent() != skel:
+			var hand_bone := skel.find_bone("mixamorig_RightHand")
+			if hand_bone >= 0:
+				var bone_attach = BoneAttachment3D.new()
+				bone_attach.bone_name = "mixamorig_RightHand"
+				skel.add_child(bone_attach)
+				bat_node.reparent(bone_attach)
+				bat_node.position = Vector3(0.04, -0.05, 0.08)
+				bat_node.rotation_degrees = Vector3(15.0, 45.0, -90.0)
+				_bat_initial_rot = bat_node.rotation_degrees
+				_bat_initial_pos = bat_node.position
 
 func set_joystick_direction(input_vector: Vector2) -> void:
 	current_shot_direction = ShotLibrary.vector_to_direction(input_vector)
@@ -79,6 +114,14 @@ func _start_swing_animation(shot_data: ShotLibrary.ShotData) -> void:
 	is_swinging = true
 	_swing_time = 0.0
 	
+	if anim_player:
+		if shot_data.elevation == GameConstants.ShotElevation.LOFTED:
+			anim_player.play("pull")
+			anim_player.speed_scale = 1.6
+		else:
+			anim_player.play("swing")
+			anim_player.speed_scale = 1.4
+	
 	if bat_node:
 		# Dynamic bat swing rotation based on shot direction and elevation
 		var target_yaw := shot_data.bat_arc_angle_deg
@@ -88,9 +131,19 @@ func _start_swing_animation(shot_data: ShotLibrary.ShotData) -> void:
 		tween.tween_property(bat_node, "rotation_degrees", Vector3(target_pitch, target_yaw, 30.0), 0.12).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 		tween.tween_property(bat_node, "rotation_degrees", Vector3(20.0, target_yaw + 60.0, -40.0), 0.15).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
 		tween.tween_property(bat_node, "rotation_degrees", _bat_initial_rot, 0.2).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
-		tween.finished.connect(func(): is_swinging = false)
+		tween.finished.connect(func():
+			is_swinging = false
+			if anim_player and anim_player.has_animation("stance"):
+				anim_player.play("stance")
+				anim_player.speed_scale = 1.0
+		)
 	else:
-		get_tree().create_timer(_swing_duration).timeout.connect(func(): is_swinging = false)
+		get_tree().create_timer(_swing_duration).timeout.connect(func():
+			is_swinging = false
+			if anim_player and anim_player.has_animation("stance"):
+				anim_player.play("stance")
+				anim_player.speed_scale = 1.0
+		)
 
 func _process(delta: float) -> void:
 	# Subtle natural breathing & bat tapping idle cycle (Real Cricket / WCC2 stance)

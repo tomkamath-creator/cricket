@@ -70,7 +70,10 @@ func _ready() -> void:
 	if difficulty_btn:
 		difficulty_btn.pressed.connect(_on_cycle_difficulty)
 	if camera_btn:
-		camera_btn.pressed.connect(func(): camera_toggle_requested.emit())
+		camera_btn.pressed.connect(_on_camera_button_pressed)
+	if camera_controller:
+		camera_controller.camera_mode_changed.connect(_on_camera_mode_changed)
+		_on_camera_mode_changed(camera_controller.get_mode_name())
 	if role_btn:
 		role_btn.pressed.connect(_on_toggle_role)
 		
@@ -170,6 +173,15 @@ func _start_fade_timer() -> void:
 func _hide_timing_banner() -> void:
 	if timing_banner:
 		timing_banner.visible = false
+
+func _on_camera_button_pressed() -> void:
+	if camera_controller:
+		camera_controller.cycle_camera_mode()
+	camera_toggle_requested.emit()
+
+func _on_camera_mode_changed(mode_name: String) -> void:
+	if camera_btn:
+		camera_btn.text = "Cam: %s" % mode_name
 
 func _on_bowl_debug_pressed() -> void:
 	var preset: Dictionary = _delivery_presets[_preset_index]

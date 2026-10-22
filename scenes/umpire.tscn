@@ -1,61 +1,10 @@
-[gd_scene load_steps=8 format=3 uid="uid://umpire001"]
+[gd_scene load_steps=3 format=3 uid="uid://umpire001"]
 
-[sub_resource type="StandardMaterial3D" id="Mat_Hat"]
-albedo_color = Color(0.95, 0.95, 0.95, 1)
-roughness = 0.5
-
-[sub_resource type="StandardMaterial3D" id="Mat_Coat"]
-albedo_color = Color(0.12, 0.12, 0.14, 1)
-roughness = 0.65
-
-[sub_resource type="StandardMaterial3D" id="Mat_Skin"]
-albedo_color = Color(0.78, 0.58, 0.45, 1)
-roughness = 0.7
-
-[sub_resource type="StandardMaterial3D" id="Mat_Pants"]
-albedo_color = Color(0.15, 0.15, 0.18, 1)
-roughness = 0.8
-
-[sub_resource type="CapsuleMesh" id="Mesh_Torso"]
-material = SubResource("Mat_Coat")
-radius = 0.22
-height = 0.7
-
-[sub_resource type="SphereMesh" id="Mesh_Head"]
-material = SubResource("Mat_Skin")
-radius = 0.14
-height = 0.28
-
-[sub_resource type="CylinderMesh" id="Mesh_Hat"]
-material = SubResource("Mat_Hat")
-top_radius = 0.18
-bottom_radius = 0.22
-height = 0.08
-
-[sub_resource type="CylinderMesh" id="Mesh_Leg"]
-material = SubResource("Mat_Pants")
-top_radius = 0.08
-bottom_radius = 0.06
-height = 0.75
+[ext_resource type="Script" path="res://scripts/umpire/umpire_controller.gd" id="1_umpire"]
+[ext_resource type="PackedScene" path="res://assets/models/Ty.glb" id="2_humanoid"]
 
 [node name="Umpire" type="Node3D"]
+script = ExtResource("1_umpire")
 
-[node name="Torso" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 0)
-mesh = SubResource("Mesh_Torso")
-
-[node name="Head" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7, 0)
-mesh = SubResource("Mesh_Head")
-
-[node name="Hat" type="MeshInstance3D" parent="Head"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.12, 0)
-mesh = SubResource("Mesh_Hat")
-
-[node name="LeftLeg" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.11, 0.45, 0)
-mesh = SubResource("Mesh_Leg")
-
-[node name="RightLeg" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.11, 0.45, 0)
-mesh = SubResource("Mesh_Leg")
+[node name="HumanoidModel" parent="." instance=ExtResource("2_humanoid")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)

@@ -3,6 +3,8 @@
 class_name BroadcastCamera
 extends Camera3D
 
+signal camera_mode_changed(mode_name: String)
+
 enum CameraMode {
 	BEHIND_BATSMAN,
 	BROADCAST_SIDE,
@@ -40,6 +42,16 @@ func _ready() -> void:
 	global_position = _target_pos
 	look_at(_target_look_at, Vector3.UP)
 
+func get_mode_name() -> String:
+	match current_mode:
+		CameraMode.BEHIND_BATSMAN: return "Behind Batsman"
+		CameraMode.BROADCAST_SIDE: return "Broadcast TV"
+		CameraMode.BALL_TRACKING: return "Ball Tracking"
+		CameraMode.BOWLER_END: return "Bowler POV"
+		CameraMode.UMPIRE_POV: return "Umpire POV"
+		CameraMode.BATSMAN_HELMET_POV: return "Helmet POV"
+	return "Camera"
+
 func set_camera_mode(mode: CameraMode) -> void:
 	current_mode = mode
 	match mode:
@@ -65,6 +77,7 @@ func set_camera_mode(mode: CameraMode) -> void:
 			fov = 68.0
 		CameraMode.BALL_TRACKING:
 			fov = 52.0
+	camera_mode_changed.emit(get_mode_name())
 
 func _physics_process(delta: float) -> void:
 	if current_mode == CameraMode.BALL_TRACKING:

@@ -167,8 +167,12 @@ func _build_boundary_rope() -> void:
 		bm.material = rope_mat
 		cushion.mesh = bm
 		
-		cushion.position = (prev_point + cur_point) * 0.5
-		cushion.look_at(cur_point, Vector3.UP)
+		var mid_pos := (prev_point + cur_point) * 0.5
+		cushion.position = mid_pos
+		var dir := (cur_point - mid_pos).normalized()
+		if dir.length() > 0.01:
+			cushion.transform = Transform3D().looking_at(dir, Vector3.UP)
+			cushion.position = mid_pos
 		rope_node.add_child(cushion)
 		
 		prev_point = cur_point
@@ -258,8 +262,11 @@ func _build_floodlight_towers() -> void:
 		head_mesh.size = Vector3(7.5, 4.5, 1.2)
 		head_mesh.material = glow_mat
 		head.mesh = head_mesh
-		head.position = pos + Vector3(0.0, 34.0, 0.0)
-		head.look_at(Vector3(0.0, 2.0, 0.0), Vector3.UP)
+		var head_pos: Vector3 = (pos as Vector3) + Vector3(0.0, 34.0, 0.0)
+		head.position = head_pos
+		var light_dir: Vector3 = (Vector3(0.0, 2.0, 0.0) - head_pos).normalized()
+		head.transform = Transform3D().looking_at(light_dir, Vector3.UP)
+		head.position = head_pos
 		light_tower_node.add_child(head)
 		
 	add_child(light_tower_node)

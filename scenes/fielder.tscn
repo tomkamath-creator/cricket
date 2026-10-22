@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://fielder001"]
 
 [ext_resource type="Script" path="res://scripts/fielding/fielder_controller.gd" id="1_fielder"]
-[ext_resource type="PackedScene" uid="uid://c53kghx38827y" path="res://assets/models/player_humanoid.glb" id="2_humanoid"]
+[ext_resource type="PackedScene" path="res://assets/models/Ty.glb" id="2_humanoid"]
 
 [node name="Fielder" type="Node3D"]
 script = ExtResource("1_fielder")

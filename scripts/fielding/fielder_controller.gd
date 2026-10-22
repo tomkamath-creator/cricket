@@ -37,14 +37,42 @@ var _throw_timer: float = 0.0
 var _run_cycle_time: float = 0.0
 
 @onready var mesh_root: Node3D = $MeshRoot
-@onready var anim_player: AnimationPlayer = $MeshRoot/HumanoidModel/AnimationPlayer
+var anim_player: AnimationPlayer
 
 func _ready() -> void:
 	home_position = global_position
+	_setup_anim_player()
+
+func _setup_anim_player() -> void:
+	var armature := get_node_or_null("MeshRoot/HumanoidModel/Armature")
+	if armature:
+		anim_player = armature.get_node_or_null("AnimationPlayer") as AnimationPlayer
+		if anim_player == null:
+			anim_player = AnimationPlayer.new()
+			anim_player.name = "AnimationPlayer"
+			armature.add_child(anim_player)
+		var lib: AnimationLibrary = load("res://assets/animations/cricket_animations.tres")
+		if lib and not anim_player.has_animation_library(""):
+			anim_player.add_animation_library("", lib)
+		_play_idle_animation()
+
+func _play_idle_animation() -> void:
+	if anim_player == null:
+		return
+	if fielder_name == "WicketKeeper" and anim_player.has_animation("keeper"):
+		anim_player.play("keeper")
+		anim_player.speed_scale = 1.0
+	elif anim_player.has_animation("stance"):
+		anim_player.play("stance")
+		anim_player.speed_scale = 1.0
 
 func assign_home_position(pos: Vector3) -> void:
 	home_position = pos
-	global_position = pos
+	if is_inside_tree():
+		global_position = pos
+	else:
+		position = pos
+	_play_idle_animation()
 
 func react_to_shot(ball: CricketBall, is_primary_chaser: bool) -> void:
 	target_ball = ball
@@ -70,13 +98,14 @@ func _physics_process(delta: float) -> void:
 			_process_return(delta)
 
 func _process_idle(_delta: float) -> void:
+	if not is_inside_tree(): return
 	# Face the pitch center
 	var look_target := Vector3(0.0, global_position.y, 0.0)
 	if global_position.distance_to(look_target) > 0.5:
 		look_at(look_target, Vector3.UP)
 
 func _process_anticipation(_delta: float) -> void:
-	if not target_ball or not is_instance_valid(target_ball):
+	if not is_inside_tree() or not target_ball or not is_instance_valid(target_ball):
 		current_state = FielderState.IDLE
 		return
 	# Turn to face ball flight
@@ -108,8 +137,10 @@ func _process_chase(delta: float) -> void:
 	global_position += _current_velocity * delta
 	
 	# Trigger running skeletal animation during pursuit sprint
-	if anim_player and not anim_player.is_playing():
-		anim_player.play("Animation")
+	if anim_player:
+		if anim_player.current_animation != "sprint" and anim_player.has_animation("sprint"):
+			anim_player.play("sprint")
+			anim_player.speed_scale = 1.3
 	
 	if _current_velocity.length() > 0.5:
 		look_at(global_position + _current_velocity, Vector3.UP)
@@ -141,6 +172,10 @@ func _process_pickup(delta: float) -> void:
 		_throw_timer = 0.2
 
 func _process_throw(delta: float) -> void:
+	if anim_player and anim_player.current_animation != "bowl" and anim_player.has_animation("bowl"):
+		anim_player.play("bowl")
+		anim_player.speed_scale = 1.6
+		
 	_throw_timer -= delta
 	if _throw_timer <= 0.0:
 		# Decide target end: choose nearest wicket (Striker at Z = 10.06 or Non-striker at Z = -10.06)
@@ -175,7 +210,12 @@ func _process_return(delta: float) -> void:
 		global_position = home_position
 		_current_velocity = Vector3.ZERO
 		current_state = FielderState.IDLE
+		_play_idle_animation()
 		return
+		
+	if anim_player and anim_player.current_animation != "runup" and anim_player.has_animation("runup"):
+		anim_player.play("runup")
+		anim_player.speed_scale = 1.1
 		
 	var dir := (home_position - global_position).normalized()
 	_current_velocity = _current_velocity.move_toward(dir * (sprint_speed * 0.6), acceleration * delta)
@@ -183,9 +223,11 @@ func _process_return(delta: float) -> void:
 	look_at(global_position + _current_velocity, Vector3.UP)
 
 func reset_to_home() -> void:
-	global_position = home_position
+	if is_inside_tree():
+		global_position = home_position
+	else:
+		position = home_position
 	_current_velocity = Vector3.ZERO
 	current_state = FielderState.IDLE
 	has_ball = false
-	if anim_player:
-		anim_player.stop()
+	_play_idle_animation()

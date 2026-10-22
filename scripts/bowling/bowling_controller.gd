@@ -123,6 +123,22 @@ func player_stop_speed_meter() -> Dictionary:
 	_start_runup()
 	return res
 
+func _get_or_create_anim_player() -> AnimationPlayer:
+	if bowler_node == null:
+		return null
+	var armature := bowler_node.get_node_or_null("HumanoidModel/Armature")
+	if armature == null:
+		return bowler_node.get_node_or_null("HumanoidModel/AnimationPlayer") as AnimationPlayer
+	var ap := armature.get_node_or_null("AnimationPlayer") as AnimationPlayer
+	if ap == null:
+		ap = AnimationPlayer.new()
+		ap.name = "AnimationPlayer"
+		armature.add_child(ap)
+	var lib: AnimationLibrary = load("res://assets/animations/cricket_animations.tres")
+	if lib and not ap.has_animation_library(""):
+		ap.add_animation_library("", lib)
+	return ap
+
 # --- RUN-UP & LAUNCH ---
 func _start_runup() -> void:
 	current_state = BowlingState.RUN_UP
@@ -132,9 +148,10 @@ func _start_runup() -> void:
 	if bowler_node:
 		bowler_node.global_position = bowler_start_runup_pos
 		bowler_node.visible = true
-		var ap := bowler_node.get_node_or_null("HumanoidModel/AnimationPlayer") as AnimationPlayer
-		if ap:
-			ap.play("Animation")
+		var ap := _get_or_create_anim_player()
+		if ap and ap.has_animation("runup"):
+			ap.play("runup")
+			ap.speed_scale = 1.2
 		
 	# Trigger difficulty-based marker fade during approach
 	if pitch_marker and not is_player_bowling:
@@ -148,7 +165,14 @@ func _physics_process(delta: float) -> void:
 		
 		if bowler_node:
 			bowler_node.global_position = bowler_start_runup_pos.lerp(bowler_crease_pos, _runup_progress)
-			# Animate 360-degree bowling arm windmill rotation during delivery stride
+			# Transition to delivery stride action in final phase of approach
+			if _runup_progress >= 0.7:
+				var ap := _get_or_create_anim_player()
+				if ap and ap.current_animation != "bowl" and ap.has_animation("bowl"):
+					ap.play("bowl")
+					ap.speed_scale = 1.4
+			
+			# Animate bowling arm windmill rotation during delivery stride
 			var arm_pivot := bowler_node.get_node_or_null("BowlingArmPivot") as Node3D
 			if arm_pivot:
 				arm_pivot.rotation_degrees.x = -_runup_progress * 360.0
@@ -179,9 +203,13 @@ func complete_delivery() -> void:
 	bowling_state_changed.emit(current_state)
 	meters.reset()
 	if bowler_node:
-		var ap := bowler_node.get_node_or_null("HumanoidModel/AnimationPlayer") as AnimationPlayer
+		var ap := _get_or_create_anim_player()
 		if ap:
-			ap.stop()
+			if ap.has_animation("stance"):
+				ap.play("stance")
+				ap.speed_scale = 1.0
+			else:
+				ap.stop()
 	if pitch_marker:
 		pitch_marker.hide_immediate()
 	delivery_completed.emit()
