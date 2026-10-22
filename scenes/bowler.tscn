@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://bowler001"]
 
-[ext_resource type="PackedScene" path="res://assets/models/Ty.glb" id="1_humanoid"]
+[ext_resource type="PackedScene" path="res://assets/models/Ty.fbx" id="1_humanoid"]
 
 [sub_resource type="SphereMesh" id="Mesh_BallHand"]
 radius = 0.055

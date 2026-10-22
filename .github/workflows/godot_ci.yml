@@ -154,23 +154,17 @@ jobs:
         uses: softprops/action-gh-release@v2
         if: github.ref == 'refs/heads/main'
         with:
-          tag_name: v3.0.0-mocap-characters
-          name: "CricStrike 3D v3.0.0 (Authentic 3D Humanoids, Mixamo Mocap Animations & Multi-POV)"
+          tag_name: v3.1.0-upright-characters-and-downloader
+          name: "CricStrike 3D v3.1.0 (Upright Standing 3D Characters & In-Game Asset Downloader)"
           body: |
-            ### CricStrike 3D - Authentic 3D Characters & Mixamo Mocap Animations (v3.0.0)
+            ### CricStrike 3D - Upright 3D Characters & Dynamic Asset Downloader (v3.1.0)
             100% Offline 3D Mobile Cricket Game inspired by "Real Cricket" and "WCC2" built in Godot Engine 4.3.
 
-            #### Major Upgrades in v3.0.0:
-            - **Authentic Textured 3D Humanoid Models**: Upgraded from primitive blocks and frozen T-poses to fully textured athletic 3D human models with a complete 69-bone humanoid skeleton (`mixamorig` standard).
-            - **Full Motion-Captured Sports Animations**:
-              - **Batting Stance & Swings**: Seamless looping cricket stance with natural weight shifts; authentic grounded drive swings and lofted pull shot animations.
-              - **Bowler Run-Up & Delivery**: Athletic running approach stride followed by realistic overarm delivery release.
-              - **11-Player Fielders**: Real sprinting cycles during ball pursuit; slide/pickup and overarm throws to the wickets.
-              - **Wicketkeeper Stance**: Dynamic crouched stance behind the stumps with glove readiness.
-              - **Umpire Decisions**: Standing posture and decisive out finger raise signal.
-            - **Bone-Attached Bat Grip**: Cricket bat handle snaps directly into the player's hands via `mixamorig_RightHand` bone tracking.
-            - **Interactive Multi-POV Camera Switching**: Tap the prominent HUD Camera button to toggle through Behind Batsman, Helmet POV, Bowler POV, Umpire POV, Broadcast TV, and Ball Tracking with immediate mode feedback.
-            - **Audio & Physics**: Procedural acoustic bat-crack, ball bounce, stump rattles, and Hawkeye 3-point LBW trajectory.
+            #### Major Upgrades in v3.1.0:
+            - **100% Upright Skeletal Poses**: Fixed coordinate space root rotation bug so batsman, bowler, 11 fielders, and umpires stand naturally on their feet rather than lying flat on the turf.
+            - **In-Game Dynamic HD Asset Downloader**: Built an in-game expansion downloader hub (like Real Cricket & WCC) allowing the game to maintain a fast, compact Play Store install size while dynamically downloading and mounting HD Stadiums, Commentary Audio, and Pro Team Kits via Godot's `ProjectSettings.load_resource_pack()`.
+            - **Motion-Captured Animation Suite**: Smooth batting stance, drive swings, lofted pulls, bowler run-up stride, overarm delivery, fielder pursuit sprint cycles, and wicketkeeper stance.
+            - **Multi-POV Cameras**: 6 dynamic camera modes (Behind Batsman, Helmet POV, Bowler POV, Umpire POV, Broadcast TV, Ball Tracking).
 
             - **Direct Download**: Tap `cricstrike_3d.apk` below directly to install on your phone.
             - **Signatures**: Verified with APK Signature Schemes v1, v2, and v3 (compatible with Android 8 - 15).

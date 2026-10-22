@@ -1,7 +1,7 @@
 [gd_scene load_steps=8 format=3 uid="uid://batsman001"]
 
 [ext_resource type="Script" path="res://scripts/batting/batting_controller.gd" id="1_batting"]
-[ext_resource type="PackedScene" path="res://assets/models/Ty.glb" id="2_humanoid"]
+[ext_resource type="PackedScene" path="res://assets/models/Ty.fbx" id="2_humanoid"]
 [ext_resource type="AnimationLibrary" path="res://assets/animations/cricket_animations.tres" id="3_anims"]
 
 [sub_resource type="BoxMesh" id="Mesh_BatBlade"]

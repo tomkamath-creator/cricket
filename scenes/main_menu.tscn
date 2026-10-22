@@ -81,6 +81,11 @@ custom_minimum_size = Vector2(280, 52)
 layout_mode = 2
 text = "LOCKER ROOM"
 
+[node name="AssetDownloaderBtn" type="Button" parent="CenterContainer/MainHub"]
+custom_minimum_size = Vector2(280, 52)
+layout_mode = 2
+text = "HD ASSETS & PACKS"
+
 [node name="ModalContainer" type="Control" parent="."]
 layout_mode = 1
 anchors_preset = 15
@@ -387,6 +392,70 @@ text = "RAISE BID"
 layout_mode = 2
 size_flags_horizontal = 3
 text = "PASS / HAMMER"
+
+[node name="AssetDownloaderPanel" type="Panel" parent="ModalContainer"]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -300.0
+offset_top = -240.0
+offset_right = 300.0
+offset_bottom = 240.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBox_Card")
+
+[node name="VBox" type="VBoxContainer" parent="ModalContainer/AssetDownloaderPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = 18.0
+offset_right = -20.0
+offset_bottom = -18.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 10
+
+[node name="Title" type="Label" parent="ModalContainer/AssetDownloaderPanel/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "HD ASSET PACKS & EXPANSIONS"
+horizontal_alignment = 1
+
+[node name="StatusLabel" type="Label" parent="ModalContainer/AssetDownloaderPanel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.8, 1, 1)
+theme_override_font_sizes/font_size = 12
+text = "Installed HD Content: 0.0 MB | Dynamic Mobile Asset Delivery"
+horizontal_alignment = 1
+
+[node name="PackListScroll" type="ScrollContainer" parent="ModalContainer/AssetDownloaderPanel/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="PackListContainer" type="VBoxContainer" parent="ModalContainer/AssetDownloaderPanel/VBox/PackListScroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 8
+
+[node name="Btns" type="HBoxContainer" parent="ModalContainer/AssetDownloaderPanel/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="CloseBtn" type="Button" parent="ModalContainer/AssetDownloaderPanel/VBox/Btns"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "CLOSE"
+
+[connection signal="pressed" from="CenterContainer/MainHub/AssetDownloaderBtn" to="." method="_on_asset_downloader_pressed"]
+[connection signal="pressed" from="ModalContainer/AssetDownloaderPanel/VBox/Btns/CloseBtn" to="." method="_on_modal_close_pressed"]
 
 [connection signal="pressed" from="CenterContainer/MainHub/QuickMatchBtn" to="." method="_on_quick_match_pressed"]
 [connection signal="pressed" from="CenterContainer/MainHub/TournamentBtn" to="." method="_on_tournament_pressed"]

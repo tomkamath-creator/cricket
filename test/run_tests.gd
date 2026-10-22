@@ -19,7 +19,8 @@ func _init() -> void:
 		"res://test/test_fielder_state.gd",
 		"res://test/test_player_customization.gd",
 		"res://test/test_game_modes.gd",
-		"res://test/test_character_animations.gd"
+		"res://test/test_character_animations.gd",
+		"res://test/test_asset_downloader.gd"
 	]
 	
 	for path in test_paths:

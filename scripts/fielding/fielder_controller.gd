@@ -44,15 +44,21 @@ func _ready() -> void:
 	_setup_anim_player()
 
 func _setup_anim_player() -> void:
-	var armature := get_node_or_null("MeshRoot/HumanoidModel/Armature")
-	if armature:
-		anim_player = armature.get_node_or_null("AnimationPlayer") as AnimationPlayer
-		if anim_player == null:
+	var players := find_children("", "AnimationPlayer", true, false)
+	if players.size() > 0:
+		anim_player = players[0] as AnimationPlayer
+	else:
+		var skels := find_children("", "Skeleton3D", true, false)
+		if skels.size() > 0:
+			var parent_node := skels[0].get_parent()
 			anim_player = AnimationPlayer.new()
 			anim_player.name = "AnimationPlayer"
-			armature.add_child(anim_player)
+			parent_node.add_child(anim_player)
+	if anim_player:
 		var lib: AnimationLibrary = load("res://assets/animations/cricket_animations.tres")
-		if lib and not anim_player.has_animation_library(""):
+		if lib:
+			if anim_player.has_animation_library(""):
+				anim_player.remove_animation_library("")
 			anim_player.add_animation_library("", lib)
 		_play_idle_animation()
 

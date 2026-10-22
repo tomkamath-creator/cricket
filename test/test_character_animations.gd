@@ -8,8 +8,8 @@ func run_all_tests() -> bool:
 	print("--- Running TestCharacterAnimations ---")
 	
 	# 1. Load Ty Character Model
-	var char_scene: PackedScene = load("res://assets/models/Ty.glb")
-	if not _assert_true(char_scene != null, "Ty.glb humanoid character loaded"):
+	var char_scene: PackedScene = load("res://assets/models/Ty.fbx")
+	if not _assert_true(char_scene != null, "Ty.fbx humanoid character loaded"):
 		passed = false
 	
 	var char_inst: Node3D = char_scene.instantiate()

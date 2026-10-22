@@ -46,34 +46,39 @@ func _setup_character_animations() -> void:
 	if humanoid_model == null:
 		return
 		
-	var armature := humanoid_model.get_node_or_null("Armature")
-	if armature:
-		anim_player = armature.get_node_or_null("AnimationPlayer") as AnimationPlayer
-		if anim_player == null:
-			anim_player = AnimationPlayer.new()
-			anim_player.name = "AnimationPlayer"
-			armature.add_child(anim_player)
-			
-		var anim_lib: AnimationLibrary = load("res://assets/animations/cricket_animations.tres")
-		if anim_lib and not anim_player.has_animation_library(""):
-			anim_player.add_animation_library("", anim_lib)
-			
-		if anim_player.has_animation("stance"):
-			anim_player.play("stance")
-			
-		# Attach bat to hand bone if available
-		var skel: Skeleton3D = armature.get_node_or_null("Skeleton3D")
-		if skel and bat_node and bat_node.get_parent() != skel:
-			var hand_bone := skel.find_bone("mixamorig_RightHand")
-			if hand_bone >= 0:
-				var bone_attach = BoneAttachment3D.new()
-				bone_attach.bone_name = "mixamorig_RightHand"
-				skel.add_child(bone_attach)
-				bat_node.reparent(bone_attach)
-				bat_node.position = Vector3(0.04, -0.05, 0.08)
-				bat_node.rotation_degrees = Vector3(15.0, 45.0, -90.0)
-				_bat_initial_rot = bat_node.rotation_degrees
-				_bat_initial_pos = bat_node.position
+	var skels := humanoid_model.find_children("", "Skeleton3D", true, false)
+	if skels.is_empty():
+		return
+	var skel: Skeleton3D = skels[0] as Skeleton3D
+	var parent_node := skel.get_parent()
+	
+	anim_player = parent_node.get_node_or_null("AnimationPlayer") as AnimationPlayer
+	if anim_player == null:
+		anim_player = AnimationPlayer.new()
+		anim_player.name = "AnimationPlayer"
+		parent_node.add_child(anim_player)
+		
+	var anim_lib: AnimationLibrary = load("res://assets/animations/cricket_animations.tres")
+	if anim_lib:
+		if anim_player.has_animation_library(""):
+			anim_player.remove_animation_library("")
+		anim_player.add_animation_library("", anim_lib)
+		
+	if anim_player.has_animation("stance"):
+		anim_player.play("stance")
+		
+	# Attach bat to hand bone if available
+	if bat_node and bat_node.get_parent() != skel:
+		var hand_bone := skel.find_bone("mixamorig_RightHand")
+		if hand_bone >= 0:
+			var bone_attach = BoneAttachment3D.new()
+			bone_attach.bone_name = "mixamorig_RightHand"
+			skel.add_child(bone_attach)
+			bat_node.reparent(bone_attach)
+			bat_node.position = Vector3(0.04, -0.05, 0.08)
+			bat_node.rotation_degrees = Vector3(15.0, 45.0, -90.0)
+			_bat_initial_rot = bat_node.rotation_degrees
+			_bat_initial_pos = bat_node.position
 
 func set_joystick_direction(input_vector: Vector2) -> void:
 	current_shot_direction = ShotLibrary.vector_to_direction(input_vector)

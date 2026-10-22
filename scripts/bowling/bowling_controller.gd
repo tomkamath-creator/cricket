@@ -126,17 +126,23 @@ func player_stop_speed_meter() -> Dictionary:
 func _get_or_create_anim_player() -> AnimationPlayer:
 	if bowler_node == null:
 		return null
-	var armature := bowler_node.get_node_or_null("HumanoidModel/Armature")
-	if armature == null:
-		return bowler_node.get_node_or_null("HumanoidModel/AnimationPlayer") as AnimationPlayer
-	var ap := armature.get_node_or_null("AnimationPlayer") as AnimationPlayer
-	if ap == null:
-		ap = AnimationPlayer.new()
-		ap.name = "AnimationPlayer"
-		armature.add_child(ap)
-	var lib: AnimationLibrary = load("res://assets/animations/cricket_animations.tres")
-	if lib and not ap.has_animation_library(""):
-		ap.add_animation_library("", lib)
+	var ap: AnimationPlayer = null
+	var players := bowler_node.find_children("", "AnimationPlayer", true, false)
+	if players.size() > 0:
+		ap = players[0] as AnimationPlayer
+	else:
+		var skels := bowler_node.find_children("", "Skeleton3D", true, false)
+		if skels.size() > 0:
+			var parent_node := skels[0].get_parent()
+			ap = AnimationPlayer.new()
+			ap.name = "AnimationPlayer"
+			parent_node.add_child(ap)
+	if ap:
+		var lib: AnimationLibrary = load("res://assets/animations/cricket_animations.tres")
+		if lib:
+			if ap.has_animation_library(""):
+				ap.remove_animation_library("")
+			ap.add_animation_library("", lib)
 	return ap
 
 # --- RUN-UP & LAUNCH ---

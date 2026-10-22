@@ -7,6 +7,7 @@ const GameConstants = preload("res://scripts/core/game_constants.gd")
 const GameModeManager = preload("res://scripts/modes/game_mode_manager.gd")
 const TournamentEngine = preload("res://scripts/modes/tournament_engine.gd")
 const AuctionEngine = preload("res://scripts/modes/auction_engine.gd")
+const AssetDownloader = preload("res://scripts/core/asset_downloader.gd")
 
 # Hub Containers
 @onready var main_hub: VBoxContainer = $CenterContainer/MainHub
@@ -14,6 +15,9 @@ const AuctionEngine = preload("res://scripts/modes/auction_engine.gd")
 @onready var tournament_panel: Panel = $ModalContainer/TournamentPanel
 @onready var super_over_panel: Panel = $ModalContainer/SuperOverPanel
 @onready var auction_panel: Panel = $ModalContainer/AuctionPanel
+@onready var asset_panel: Panel = get_node_or_null("ModalContainer/AssetDownloaderPanel")
+@onready var asset_status_label: Label = get_node_or_null("ModalContainer/AssetDownloaderPanel/VBox/StatusLabel")
+@onready var asset_pack_list_container: VBoxContainer = get_node_or_null("ModalContainer/AssetDownloaderPanel/VBox/PackListScroll/PackListContainer")
 
 # Quick Match inputs
 @onready var qm_team_a: OptionButton = $ModalContainer/QuickMatchPanel/VBox/TeamAOption
@@ -39,6 +43,7 @@ const AuctionEngine = preload("res://scripts/modes/auction_engine.gd")
 
 var tournament_engine: TournamentEngine
 var auction_engine: AuctionEngine
+var asset_downloader: AssetDownloader
 
 func _ready() -> void:
 	tournament_engine = TournamentEngine.new()
@@ -49,6 +54,11 @@ func _ready() -> void:
 	if not auction_engine.load_from_file():
 		auction_engine.initialize_auction()
 		
+	asset_downloader = AssetDownloader.new()
+	add_child(asset_downloader)
+	asset_downloader.download_progress.connect(_on_asset_download_progress)
+	asset_downloader.download_completed.connect(_on_asset_download_completed)
+		
 	_hide_all_modals()
 	_populate_dropdowns()
 
@@ -57,6 +67,7 @@ func _hide_all_modals() -> void:
 	if tournament_panel: tournament_panel.visible = false
 	if super_over_panel: super_over_panel.visible = false
 	if auction_panel: auction_panel.visible = false
+	if asset_panel: asset_panel.visible = false
 	if main_hub: main_hub.visible = true
 
 func _populate_dropdowns() -> void:
@@ -111,6 +122,71 @@ func _on_auction_pressed() -> void:
 
 func _on_locker_room_pressed() -> void:
 	get_tree().change_scene_to_file("res://scenes/locker_room.tscn")
+
+func _on_asset_downloader_pressed() -> void:
+	main_hub.visible = false
+	if asset_panel:
+		asset_panel.visible = true
+	_refresh_asset_view()
+
+func _refresh_asset_view() -> void:
+	if asset_downloader == null: return
+	if asset_status_label:
+		var total_mb := asset_downloader.get_total_installed_size_mb()
+		asset_status_label.text = "Installed HD Content: %.1f MB | Dynamic Mobile Asset Delivery" % total_mb
+		
+	if asset_pack_list_container:
+		for c in asset_pack_list_container.get_children():
+			c.queue_free()
+			
+		for pack in asset_downloader.available_packs:
+			var card := PanelContainer.new()
+			var margin := MarginContainer.new()
+			margin.add_theme_constant_override("margin_left", 8)
+			margin.add_theme_constant_override("margin_right", 8)
+			margin.add_theme_constant_override("margin_top", 6)
+			margin.add_theme_constant_override("margin_bottom", 6)
+			
+			var row := HBoxContainer.new()
+			row.add_theme_constant_override("separation", 12)
+			
+			var info_box := VBoxContainer.new()
+			info_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			var title_lbl := Label.new()
+			title_lbl.text = "%s (%.0f MB)" % [pack.title, pack.size_mb]
+			title_lbl.add_theme_font_size_override("font_size", 14)
+			var desc_lbl := Label.new()
+			desc_lbl.text = pack.description
+			desc_lbl.add_theme_font_size_override("font_size", 11)
+			desc_lbl.add_theme_color_override("font_color", Color(0.7, 0.8, 0.9))
+			info_box.add_child(title_lbl)
+			info_box.add_child(desc_lbl)
+			
+			var btn := Button.new()
+			btn.custom_minimum_size = Vector2(130, 36)
+			if pack.is_installed:
+				btn.text = "INSTALLED"
+				btn.disabled = true
+			else:
+				btn.text = "DOWNLOAD"
+				var pack_id: String = pack.id
+				btn.pressed.connect(func():
+					btn.disabled = true
+					btn.text = "DOWNLOADING..."
+					asset_downloader.start_download(pack_id)
+				)
+			row.add_child(info_box)
+			row.add_child(btn)
+			margin.add_child(row)
+			card.add_child(margin)
+			asset_pack_list_container.add_child(card)
+
+func _on_asset_download_progress(pack_id: String, pct: float, _down: int, _tot: int) -> void:
+	if asset_status_label:
+		asset_status_label.text = "Downloading %s: %.0f%%..." % [pack_id, pct]
+
+func _on_asset_download_completed(_pack_id: String, _success: bool, _msg: String) -> void:
+	_refresh_asset_view()
 
 # --- Quick Match Launch ---
 

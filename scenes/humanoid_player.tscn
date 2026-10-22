@@ -1,6 +1,6 @@
 [gd_scene load_steps=7 format=3 uid="uid://humanoidrig001"]
 
-[ext_resource type="PackedScene" path="res://assets/models/Ty.glb" id="1_model"]
+[ext_resource type="PackedScene" path="res://assets/models/Ty.fbx" id="1_model"]
 
 [sub_resource type="BoxMesh" id="Mesh_BatBlade"]
 size = Vector3(0.11, 0.62, 0.04)
