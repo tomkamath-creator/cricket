@@ -1,10 +1,13 @@
-[gd_scene load_steps=6 format=3 uid="uid://uihud001"]
+[gd_scene load_steps=9 format=3 uid="uid://uihud001"]
 
 [ext_resource type="Script" path="res://scripts/ui/batting_hud.gd" id="1_hud"]
 [ext_resource type="Script" path="res://scripts/ui/virtual_joystick.gd" id="2_joystick"]
 [ext_resource type="PackedScene" uid="uid://bowlingmeters001" path="res://scenes/bowling_meters_hud.tscn" id="3_meters"]
 [ext_resource type="PackedScene" uid="uid://scoreboard001" path="res://scenes/scoreboard_hud.tscn" id="4_score"]
 [ext_resource type="PackedScene" uid="uid://wagonwheel001" path="res://scenes/wagon_wheel_view.tscn" id="5_wagon"]
+[ext_resource type="PackedScene" uid="uid://bowlercard001" path="res://scenes/bowler_card_overlay.tscn" id="6_bcard"]
+[ext_resource type="PackedScene" uid="uid://replayoverlay001" path="res://scenes/broadcast_replay_overlay.tscn" id="7_replay"]
+[ext_resource type="PackedScene" uid="uid://commentarybanner001" path="res://scenes/commentary_banner.tscn" id="8_comm"]
 
 [node name="BattingHUD" type="CanvasLayer"]
 script = ExtResource("1_hud")
@@ -17,9 +20,9 @@ anchors_preset = 2
 anchor_top = 1.0
 anchor_bottom = 1.0
 offset_left = 32.0
-offset_top = -180.0
+offset_top = -240.0
 offset_right = 192.0
-offset_bottom = -20.0
+offset_bottom = -76.0
 grow_vertical = 0
 
 [node name="VirtualJoystick" type="Control" parent="BottomLeftControls"]
@@ -39,9 +42,9 @@ anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = -190.0
-offset_top = -180.0
+offset_top = -240.0
 offset_right = -30.0
-offset_bottom = -20.0
+offset_bottom = -76.0
 grow_horizontal = 0
 grow_vertical = 0
 
@@ -152,6 +155,15 @@ text = "Cam (C)"
 process_mode = 3
 layout_mode = 2
 text = "⏸ PAUSE"
+
+[node name="BowlerCardOverlay" parent="." instance=ExtResource("6_bcard")]
+visible = false
+
+[node name="BroadcastReplayOverlay" parent="." instance=ExtResource("7_replay")]
+visible = false
+
+[node name="CommentaryBanner" parent="." instance=ExtResource("8_comm")]
+visible = false
 
 [node name="BowlingMetersUI" parent="." instance=ExtResource("3_meters")]
 visible = false

@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://mainarena001"]
+[gd_scene load_steps=17 format=3 uid="uid://mainarena001"]
 
 [ext_resource type="Script" path="res://scripts/arena/pitch_arena.gd" id="1_arena"]
 [ext_resource type="Script" path="res://scripts/arena/stadium_builder.gd" id="2_stadium"]
@@ -15,6 +15,8 @@
 [ext_resource type="PackedScene" uid="uid://umpire001" path="res://scenes/umpire.tscn" id="13_umpire"]
 [ext_resource type="PackedScene" uid="uid://bowler001" path="res://scenes/bowler.tscn" id="14_bowler"]
 [ext_resource type="Script" path="res://scripts/audio/audio_manager.gd" id="15_audio"]
+[ext_resource type="Script" path="res://scripts/camera/broadcast_replay_director.gd" id="16_replay"]
+[ext_resource type="Script" path="res://scripts/audio/commentary_manager.gd" id="17_comm"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_1"]
 sky_top_color = Color(0.24, 0.52, 0.88, 1)
@@ -95,17 +97,6 @@ ball_ref = NodePath("../CricketBall")
 [node name="Fielder10" parent="FieldingManager" instance=ExtResource("11_fielder")]
 [node name="Fielder11" parent="FieldingManager" instance=ExtResource("11_fielder")]
 
-[node name="MatchController" type="Node" parent="." node_paths=PackedStringArray("ball_ref", "batsman_ref", "bowling_controller", "fielding_manager", "scoreboard_ui", "wagon_wheel_view", "broadcast_camera", "bowler_umpire")]
-script = ExtResource("12_match")
-ball_ref = NodePath("../CricketBall")
-batsman_ref = NodePath("../Batsman")
-bowling_controller = NodePath("../BowlingController")
-fielding_manager = NodePath("../FieldingManager")
-scoreboard_ui = NodePath("../BattingHUD/ScoreboardUI")
-wagon_wheel_view = NodePath("../BattingHUD/WagonWheelView")
-broadcast_camera = NodePath("../BroadcastCamera")
-bowler_umpire = NodePath("../BowlerUmpire")
-
 [node name="BroadcastCamera" type="Camera3D" parent="." node_paths=PackedStringArray("ball_target", "batsman_target")]
 transform = Transform3D(1, 0, 0, 0, 0.978148, 0.207912, 0, -0.207912, 0.978148, 0, 1.85, 13.8)
 current = true
@@ -116,6 +107,28 @@ batsman_target = NodePath("../Batsman")
 
 [node name="AudioManager" type="Node" parent="."]
 script = ExtResource("15_audio")
+
+[node name="CommentaryManager" type="Node" parent="."]
+script = ExtResource("17_comm")
+
+[node name="BroadcastReplayDirector" type="Node" parent="." node_paths=PackedStringArray("camera")]
+script = ExtResource("16_replay")
+camera = NodePath("../BroadcastCamera")
+
+[node name="MatchController" type="Node" parent="." node_paths=PackedStringArray("ball_ref", "batsman_ref", "bowling_controller", "fielding_manager", "scoreboard_ui", "wagon_wheel_view", "broadcast_camera", "bowler_umpire", "replay_director", "bowler_celebration", "stadium_builder", "hud_ref")]
+script = ExtResource("12_match")
+ball_ref = NodePath("../CricketBall")
+batsman_ref = NodePath("../Batsman")
+bowling_controller = NodePath("../BowlingController")
+fielding_manager = NodePath("../FieldingManager")
+scoreboard_ui = NodePath("../BattingHUD/ScoreboardUI")
+wagon_wheel_view = NodePath("../BattingHUD/WagonWheelView")
+broadcast_camera = NodePath("../BroadcastCamera")
+bowler_umpire = NodePath("../BowlerUmpire")
+replay_director = NodePath("../BroadcastReplayDirector")
+bowler_celebration = NodePath("../Bowler")
+stadium_builder = NodePath("../StadiumBuilder")
+hud_ref = NodePath("../BattingHUD")
 
 [node name="BattingHUD" parent="." node_paths=PackedStringArray("batsman", "ball", "camera_controller") instance=ExtResource("7_hud")]
 batsman = NodePath("../Batsman")

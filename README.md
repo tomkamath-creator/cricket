@@ -1,59 +1,68 @@
 # CricStrike 3D 🏏
 
-A production-quality, 100% offline 3D mobile cricket game inspired by *Real Cricket*, built from the ground up for **Godot Engine 4.x** with mobile/Android performance optimization.
+A production-quality, 100% offline 3D mobile cricket game inspired by *Real Cricket 3D* and *WCC3*, built from the ground up for **Godot Engine 4.3** with premium esports aesthetics and mobile/Android performance optimization.
 
 ---
 
-## 🎯 Phase 1 Completed: 3D Pitch Arena, Ball Physics & Batting Timing Engine
-- **Regulation 20.12m Pitch Arena**: Stumps, bails, popping creases, boundary cushions, sight screens, and stadium grandstand.
-- **Physical Wickets**: 3 individual stumps & 2 bails with collision dislodging.
-- **Aerodynamic Ball Physics**: Quadratic drag, Magnus effect swing, pitch surface bounce modeling (Green, Dusty, Flat, Wet).
-- **8-Way Directional Batting**: 8 compass directions x 2 elevation levels (Grounded vs Lofted) with millisecond timing ratings (`PERFECT`, `EARLY`, `LATE`, `TOO_EARLY`, `TOO_LATE`, `MISSED`, and Edges).
-- **Broadcast Camera**: 4 dynamic camera tracking angles (`BEHIND_BATSMAN`, `BROADCAST_SIDE`, `BALL_TRACKING`, `BOWLER_END`).
+## 🌟 Major Features in v4.0.0 (Pro Broadcast & International Stadium Edition)
+
+### 1. 📺 Broadcast Replay System (`scripts/camera/broadcast_replay_director.gd`)
+- **Automated Slow-Motion Replay**: Automatically triggers a 3-second multi-angle slow-motion ($0.45\times$ speed) TV replay after every boundary ($4$ or $6$) and wicket dismissal.
+- **Dynamic 3-Angle Director**:
+  1. *Angle 1 (Pitch Delivery Cam)*: Low-angle tracking from the pitch corridor focusing on ball release and bounce.
+  2. *Angle 2 (Ultra Slow-Mo Impact Cam)*: Crease close-up capturing bat-ball impact and stump dislodgement.
+  3. *Angle 3 (Reverse Broadcast Sky Cam)*: Elevated stadium perspective tracking the boundary flight and crowd celebration.
+- **Instant Skip Button**: Prominent, touch-friendly **"⏩ SKIP REPLAY"** button allowing players to instantly interrupt the replay and return smoothly to live gameplay.
+- **TV Broadcast Overlay**: Blinking recording indicator (`● REC SLOW-MO REPLAY`), dynamic title cards, and camera angle counters (`ANGLE 1 / 3 [PITCH CAM]`).
+
+### 2. 🏟️ Animated Stadium Crowd, Waving Team Flags & Flashlights (`scripts/arena/crowd_animator.gd`)
+- **Dynamic Spectator Cheering Loops**: Multi-tiered grandstands populated with vibrant spectators in international team colors (India Blue, Australia Gold, Cricket White, Saffron, Crimson). Spectators perform synchronized traveling Mexican waves and high-energy jumping cheering surges on boundaries and wickets.
+- **Waving Team Flags**: 16 perimeter flagpoles around the grandstand rim featuring fluttering national and franchise team flags with procedural wind flutter physics.
+- **Smartphone Flashlights in the Stands**: 48+ twinkling LED flashlight points distributed across seating tiers with randomized twinkle phases, recreating the iconic night-match stadium atmosphere.
+
+### 3. 🎙️ Procedural Situational Audio Commentary (`scripts/audio/commentary_manager.gd`)
+- **Situational Commentary Lines**: Iconic broadcast commentary voiced and displayed on key match events:
+  - *Sixes*: *"Smacked straight down the ground for a maximum!"*, *"High, handsome and into the second tier! What a colossal strike!"*
+  - *Fours*: *"Pierces the infield with precision! Beautiful boundary!"*, *"Cracking shot! Races away to the fence like a tracer bullet!"*
+  - *Bowled*: *"Timber! Clean bowled through the gate! Stumps are shattered!"*, *"What a peach of a delivery! Knocked him over completely!"*
+  - *Caught*: *"In the air... and it's taken! Big wicket for the bowling side!"*, *"Up goes the finger! Caught in the deep, massive breakthrough!"*
+  - *Half-Centuries*: *"Fifty for the batsman! A masterclass knock under pressure, and the crowd is on its feet!"*
+- **Acoustic Audio Synthesis**: Procedurally synthesized broadcast commentary chimes, replay transition whooshes, high-five handclaps, and crowd standing ovation roars generated in `AudioManager`.
+- **On-Screen Commentary Banner**: Sleek TV broadcast subtitle card at the top with animated sound-wave visualizer and commentator attribution.
+
+### 4. ✋ Player Celebration Animations (`scripts/player/bowler_celebration.gd`)
+- **Bowler Wicket Celebration**: Bowler leaps in jubilation with high-five arm gesture and acoustic handclap SFX on every dismissal.
+- **Batsman Bat-Raise Gesture**: Batsman raises bat high to the crowd and pavilion on reaching a half-century ($50\text{ runs}$) accompanied by standing ovation roars.
+
+### 5. 📊 In-Game Graphics Overlays & Massive 3D Stadium (`scripts/arena/stadium_builder.gd`)
+- **TV Broadcast Score Bar at Bottom**: Modern esports broadcast score strip anchored at the bottom of the screen featuring team badges, overs, CRR, RRR, active batsman stats, bowler figures, and over ball badges.
+- **Bowler Card on New Over**: Lower-third broadcast card sliding in on new overs with full bowler profile and spell figures.
+- **Batsman 360° Wagon Wheel Pop-Up**: Radar/polar shot distribution chart showing all scored shots color-coded by runs (singles, fours, sixes) with off-side vs leg-side breakdown.
+- **International Stadium 3D Model**:
+  - Pristine rectangular green turf pitch ($20.12\text{m}$ pitch strip, popping/bowling/return crease white lines, pitch turf shader).
+  - White foam boundary ropes with sponsor advertising wedges.
+  - 4 giant $38\text{m}$ lattice floodlight towers with 32-lamp LED projector clusters.
+  - 3-tiered concentric grandstands with entry vomitories, roof canopies, and player dugouts under a clear blue daylight sky dome.
 
 ---
 
-## 🎯 Phase 2 Completed: Bowling System, AI Bowler & Difficulty Engine
+## 🎮 Modes & Gameplay
 
-### 1. Interactive 3D Pitch Delivery Marker (`scripts/bowling/pitch_marker.gd`)
-- Drag-and-drop / touch target placement on the pitch strip.
-- Length classification:
-  - **Yorker**: $8.2\text{m} - 9.5\text{m}$ (aiming at the blockhole and batsman's toes).
-  - **Full Length**: $6.5\text{m} - 8.0\text{m}$ (tempting drive length).
-  - **Good Length**: $4.5\text{m} - 6.5\text{m}$ (corridor of uncertainty, inducing edges and seams).
-  - **Short / Bouncer**: $1.5\text{m} - 4.5\text{m}$ (chest-height bouncers and ribs attacks).
-- Dynamic difficulty-based marker fading.
-
-### 2. Oscillating Swing & Speed Meters (`scripts/bowling/bowling_meters.gd`)
-- **Step 1**: Line & Length target selection.
-- **Step 2**: Oscillating swing meter (stop needle in the green zone for maximum outswing, inswing, off-break, or leg-break).
-- **Step 3**: Speed power meter sweeping between $110\text{ km/h}$ and $152\text{ km/h}$ (hitting the peak sweetspot releases maximum pace without line dispersion).
-
-### 3. Advanced AI Bowling Engine (`scripts/bowling/ai_bowler.gd`)
-Features 4 distinct difficulty modes that dynamically adjust physics and tactics:
-- **Easy**: Wide batting timing window ($\pm 45\text{ms}$), static pitch marker with long display time, predictable bowling ($118 - 126\text{ km/h}$), gentle pace.
-- **Medium**: Balanced timing window ($\pm 26\text{ms}$), standard swing/seam movement ($130 - 138\text{ km/h}$), marker fades on pitch contact.
-- **Hard**: Strict timing window ($\pm 16\text{ms}$), delayed pitch marker (fades halfway through run-up), deceptive slower balls ($112\text{ km/h}$) and reverse swing ($145\text{ km/h}$), actively targets batsman's weak zone outside off-stump to induce edges.
-- **Legend / Pro**: Ultra-tight timing window ($\pm 9\text{ms}$), marker fades immediately upon bowler release ($0.18\text{s}$), express pace ($148 - 152\text{ km/h}$), lethal tactical traps (bouncers followed by toe-crushing yorkers).
-- **Pitch Surface Intelligence**:
-  - *Green Top*: AI exploits excessive seam movement and damp-air swing.
-  - *Dusty / Cracking*: AI uses off-cutters and high-grip spin deviations.
-  - *Flat Road*: AI utilizes changes of pace and yorkers in the blockhole.
-  - *Wet / Damp*: AI aims low-skid deliveries straight at the stumps for LBW/bowled.
-
-### 4. Seamless Role Switching
-- Tap **Role: Batting** / **Role: Bowling** on the HUD to immediately swap between batting against the AI bowler or bowling with the interactive meters.
+- **Quick Match (Exhibition)**: Choose between 2, 5, or 10 overs.
+- **Super Over**: High-pressure chase with 6 balls to win.
+- **T20 Championship**: International tournament bracket.
+- **Premier Auction & Locker Room**: Full team squad bidding and 3D player customization studio.
 
 ---
 
 ## 🚀 Headless Testing & CI (GitHub Actions)
 
-Run headless physics, timing, and AI bowling tests:
+Run headless physics, timing, replay, stadium, commentary, and celebration tests:
 ```bash
 godot --headless --script test/run_tests.gd
 ```
 
-All 36 unit assertions are verified automatically on Ubuntu runners via GitHub Actions.
+All 17 test suites (60+ assertions) are verified automatically on Ubuntu runners via GitHub Actions.
 
 ---
 

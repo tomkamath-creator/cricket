@@ -1,5 +1,5 @@
 # PitchArena.gd - CricStrike 3D
-# Master Scene Coordinator for Phase 1 & Phase 2: Pitch Arena, Aerodynamics, Batting & Bowling AI
+# Master Scene Coordinator: Pitch Arena, Aerodynamics, Batting, Bowling AI & Broadcast Replay
 class_name PitchArena
 extends Node3D
 
@@ -62,13 +62,17 @@ func _ready() -> void:
 		bowling_controller.delivery_released.connect(_on_delivery_released)
 		bowling_controller.delivery_completed.connect(_on_delivery_completed)
 
-	# Connect HUD
+	# Connect HUD & Replay Director
 	if hud:
 		hud.deliver_requested.connect(_on_hud_deliver_requested)
 		hud.pitch_condition_changed.connect(set_pitch_condition)
 		hud.difficulty_changed.connect(set_difficulty)
 		hud.camera_toggle_requested.connect(_on_camera_toggle)
 		hud.role_toggled.connect(_on_role_toggled)
+		
+		var replay_dir := get_node_or_null("BroadcastReplayDirector")
+		if replay_dir:
+			hud.bind_replay_director(replay_dir)
 		
 		if hud.bowling_meters_ui and bowling_controller:
 			hud.bowling_meters_ui.bind_meters(bowling_controller.meters)

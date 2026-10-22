@@ -5,6 +5,11 @@ extends Node3D
 
 signal shot_executed(result: TimingEngine.TimingResult)
 signal shot_missed()
+signal celebration_started()
+signal celebration_ended()
+
+const AudioManager = preload("res://scripts/audio/audio_manager.gd")
+const CommentaryManager = preload("res://scripts/audio/commentary_manager.gd")
 
 @export var is_right_handed: bool = true
 @export var difficulty: GameConstants.Difficulty = GameConstants.Difficulty.MEDIUM
@@ -16,6 +21,7 @@ signal shot_missed()
 # State
 var current_shot_direction: GameConstants.ShotDirection = GameConstants.ShotDirection.STRAIGHT
 var is_swinging: bool = false
+var is_celebrating: bool = false
 var strike_plane_z: float = 9.05 # Ideal contact plane along Z (near popping crease)
 
 # Procedural bat swing & idle stance animation
@@ -84,7 +90,7 @@ func set_joystick_direction(input_vector: Vector2) -> void:
 	current_shot_direction = ShotLibrary.vector_to_direction(input_vector)
 
 func trigger_shot(elevation: GameConstants.ShotElevation) -> TimingEngine.TimingResult:
-	if is_swinging:
+	if is_swinging or is_celebrating:
 		return null
 		
 	var shot_data := ShotLibrary.get_shot(current_shot_direction, elevation)
@@ -150,9 +156,52 @@ func _start_swing_animation(shot_data: ShotLibrary.ShotData) -> void:
 				anim_player.speed_scale = 1.0
 		)
 
+func celebrate_bat_raise() -> void:
+	if is_celebrating:
+		return
+	is_celebrating = true
+	celebration_started.emit()
+	
+	# Play standing ovation crowd acoustic
+	var audio := AudioManager.get_instance()
+	if audio:
+		audio.play_standing_ovation()
+		
+	var comm := CommentaryManager.get_instance()
+	if comm:
+		comm.trigger_event(CommentaryManager.CommentaryEvent.HALF_CENTURY)
+		
+	if bat_node:
+		var tween := create_tween()
+		# Raise bat vertically high above head towards pavilion
+		tween.tween_property(bat_node, "rotation_degrees", Vector3(-130.0, 30.0, -15.0), 0.45).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+		tween.parallel().tween_property(bat_node, "position:y", _bat_initial_pos.y + 0.45, 0.45)
+		
+		if humanoid_model:
+			tween.parallel().tween_property(humanoid_model, "rotation_degrees:y", -35.0, 0.4)
+			
+		# Hold salute for 2 seconds
+		tween.tween_interval(2.0)
+		
+		# Lower bat back to batting stance
+		tween.tween_property(bat_node, "rotation_degrees", _bat_initial_rot, 0.4).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+		tween.parallel().tween_property(bat_node, "position:y", _bat_initial_pos.y, 0.4)
+		if humanoid_model:
+			tween.parallel().tween_property(humanoid_model, "rotation_degrees:y", 0.0, 0.4)
+			
+		tween.finished.connect(func():
+			is_celebrating = false
+			celebration_ended.emit()
+		)
+	else:
+		get_tree().create_timer(2.4).timeout.connect(func():
+			is_celebrating = false
+			celebration_ended.emit()
+		)
+
 func _process(delta: float) -> void:
 	# Subtle natural breathing & bat tapping idle cycle (Real Cricket / WCC2 stance)
-	if not is_swinging and bat_node:
+	if not is_swinging and not is_celebrating and bat_node:
 		_idle_time += delta * 4.5
 		var bat_tap: float = sin(_idle_time) * 4.0
 		bat_node.rotation_degrees.x = _bat_initial_rot.x + bat_tap

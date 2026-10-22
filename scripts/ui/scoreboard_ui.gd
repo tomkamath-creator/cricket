@@ -10,14 +10,14 @@ const ScoreboardData = preload("res://scripts/match/scoreboard_data.gd")
 var scoreboard: ScoreboardData
 
 # UI References
-@onready var team_score_label: Label = $ScorePanel/VBoxContainer/TopRow/TeamScoreLabel
-@onready var overs_label: Label = $ScorePanel/VBoxContainer/TopRow/OversLabel
-@onready var crr_label: Label = $ScorePanel/VBoxContainer/TopRow/CRRLabel
-@onready var striker_label: Label = $ScorePanel/VBoxContainer/PlayerRow/StrikerLabel
-@onready var non_striker_label: Label = $ScorePanel/VBoxContainer/PlayerRow/NonStrikerLabel
-@onready var bowler_label: Label = $ScorePanel/VBoxContainer/PlayerRow/BowlerLabel
-@onready var over_tracker_container: HBoxContainer = $ScorePanel/VBoxContainer/OverTrackerRow/BallsContainer
-@onready var wagon_btn: Button = $ScorePanel/VBoxContainer/TopRow/WagonWheelButton
+@onready var team_score_label: Label = find_child("TeamScoreLabel", true, false) as Label
+@onready var overs_label: Label = find_child("OversLabel", true, false) as Label
+@onready var crr_label: Label = find_child("CRRLabel", true, false) as Label
+@onready var striker_label: Label = find_child("StrikerLabel", true, false) as Label
+@onready var non_striker_label: Label = find_child("NonStrikerLabel", true, false) as Label
+@onready var bowler_label: Label = find_child("BowlerLabel", true, false) as Label
+@onready var over_tracker_container: HBoxContainer = find_child("BallsContainer", true, false) as HBoxContainer
+@onready var wagon_btn: Button = find_child("WagonWheelButton", true, false) as Button
 
 func _ready() -> void:
 	if wagon_btn:

@@ -7,6 +7,7 @@ signal score_updated()
 signal over_completed(over_number: int, maiden: bool)
 signal innings_completed(total_runs: int, total_wickets: int)
 signal strike_rotated(striker_name: String, non_striker_name: String)
+signal half_century_achieved(batsman_name: String, runs: int, balls_faced: int)
 
 class BatsmanStats:
 	var name: String
@@ -16,6 +17,7 @@ class BatsmanStats:
 	var sixes: int = 0
 	var is_out: bool = false
 	var dismissal_info: String = "not out"
+	var celebrated_fifty: bool = false
 
 	func _init(p_name: String) -> void:
 		name = p_name
@@ -108,9 +110,15 @@ func record_delivery(call: UmpireRules.UmpireCall, shot_heading_deg: float = 0.0
 		
 	if striker:
 		striker.balls_faced += 1
+		var prev_runs := striker.runs
 		striker.runs += runs
 		if runs == 4: striker.fours += 1
 		elif runs == 6: striker.sixes += 1
+		
+		# Check Half-Century milestone
+		if not striker.celebrated_fifty and striker.runs >= 50 and prev_runs < 50:
+			striker.celebrated_fifty = true
+			half_century_achieved.emit(striker.name, striker.runs, striker.balls_faced)
 		
 	# Record Wagon Wheel
 	if runs > 0 or shot_distance > 5.0:

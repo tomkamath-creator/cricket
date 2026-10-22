@@ -17,6 +17,9 @@ const CricketBall = preload("res://scripts/physics/cricket_ball.gd")
 const BroadcastCamera = preload("res://scripts/camera/broadcast_camera.gd")
 const VirtualJoystick = preload("res://scripts/ui/virtual_joystick.gd")
 const BowlingMetersUI = preload("res://scripts/ui/bowling_meters_ui.gd")
+const BowlerCardOverlay = preload("res://scripts/ui/bowler_card_overlay.gd")
+const BroadcastReplayOverlay = preload("res://scripts/ui/broadcast_replay_overlay.gd")
+const CommentaryBanner = preload("res://scripts/ui/commentary_banner.gd")
 
 @export var batsman: BattingController
 @export var ball: CricketBall
@@ -38,6 +41,9 @@ const BowlingMetersUI = preload("res://scripts/ui/bowling_meters_ui.gd")
 @onready var role_btn: Button = $TopRightControls/RoleButton
 @onready var pause_btn: Button = get_node_or_null("TopRightControls/PauseButton")
 @onready var bowling_meters_ui: BowlingMetersUI = $BowlingMetersUI
+@onready var bowler_card: BowlerCardOverlay = get_node_or_null("BowlerCardOverlay")
+@onready var replay_overlay: BroadcastReplayOverlay = get_node_or_null("BroadcastReplayOverlay")
+@onready var commentary_banner: CommentaryBanner = get_node_or_null("CommentaryBanner")
 @onready var pause_menu: Control = get_node_or_null("PauseMenu")
 @onready var resume_btn: Button = get_node_or_null("PauseMenu/Center/Panel/Margin/VBox/ResumeBtn")
 @onready var pause_camera_btn: Button = get_node_or_null("PauseMenu/Center/Panel/Margin/VBox/PauseCameraBtn")
@@ -93,6 +99,10 @@ func _ready() -> void:
 	if exit_menu_btn:
 		exit_menu_btn.pressed.connect(_on_exit_menu_pressed)
 
+func bind_replay_director(director: Node) -> void:
+	if replay_overlay and director:
+		replay_overlay.bind_replay_director(director)
+
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_WM_GO_BACK_REQUEST:
 		_handle_back_request()
@@ -100,7 +110,6 @@ func _notification(what: int) -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel"):
 		_handle_back_request()
-		get_viewport().set_input_as_handled()
 
 func _handle_back_request() -> void:
 	if pause_menu and pause_menu.visible:
@@ -109,20 +118,22 @@ func _handle_back_request() -> void:
 		_on_pause_pressed()
 
 func _on_pause_pressed() -> void:
-	if pause_menu:
-		pause_menu.visible = true
-		get_tree().paused = true
-		_update_pause_camera_btn_text()
+	if pause_menu == null:
+		return
+	get_tree().paused = true
+	_update_pause_camera_btn_text()
+	pause_menu.visible = true
 
 func _on_resume_pressed() -> void:
-	if pause_menu:
-		pause_menu.visible = false
-		get_tree().paused = false
+	if pause_menu == null:
+		return
+	pause_menu.visible = false
+	get_tree().paused = false
 
 func _on_pause_camera_pressed() -> void:
 	if camera_controller:
 		camera_controller.cycle_camera_mode()
-	_update_pause_camera_btn_text()
+		_update_pause_camera_btn_text()
 
 func _update_pause_camera_btn_text() -> void:
 	if pause_camera_btn and camera_controller:
@@ -135,108 +146,73 @@ func _on_restart_pressed() -> void:
 func _on_exit_menu_pressed() -> void:
 	get_tree().paused = false
 	get_tree().change_scene_to_file("res://scenes/main_menu.tscn")
-		
-	# Connect Batsman signals
-	if batsman:
-		batsman.shot_executed.connect(_on_shot_executed)
-		batsman.shot_missed.connect(_on_shot_missed)
-		
-	# Connect Ball signals
-	if ball:
-		ball.ball_boundary.connect(_on_ball_boundary)
-		ball.ball_stump_collision.connect(_on_stump_collision)
-		
-	_update_hud_display()
-	_hide_timing_banner()
 
 func _on_toggle_role() -> void:
 	is_bowling_role = not is_bowling_role
 	if is_bowling_role:
 		role_btn.text = "Role: Bowling"
-		bottom_left_controls.visible = false
-		bottom_right_controls.visible = false
-		shot_name_label.text = "Bowling Mode Active"
-		stats_label.text = "Use meters below to control line, length, swing & speed"
-		if camera_controller:
-			camera_controller.set_camera_mode(BroadcastCamera.CameraMode.BOWLER_END)
+		if bottom_left_controls: bottom_left_controls.visible = false
+		if bottom_right_controls: bottom_right_controls.visible = false
+		if bowling_meters_ui:
+			bowling_meters_ui.show_aiming_step()
 	else:
 		role_btn.text = "Role: Batting"
-		bottom_left_controls.visible = true
-		bottom_right_controls.visible = true
-		shot_name_label.text = "Batting Mode Active"
-		stats_label.text = "Auto-Bowling Active | Joystick to aim | Tap Lofted/Grounded"
+		if bottom_left_controls: bottom_left_controls.visible = true
+		if bottom_right_controls: bottom_right_controls.visible = true
 		if bowling_meters_ui:
 			bowling_meters_ui.hide_meters()
-		if camera_controller:
-			camera_controller.set_camera_mode(BroadcastCamera.CameraMode.BEHIND_BATSMAN)
 			
 	role_toggled.emit(is_bowling_role)
 
 func _on_joystick_vector_changed(vector: Vector2) -> void:
-	if batsman and not is_bowling_role:
+	if batsman:
 		batsman.set_joystick_direction(vector)
 
-func _on_shot_sector_changed(direction: GameConstants.ShotDirection) -> void:
-	if is_bowling_role:
-		return
-	var grounded_shot: ShotLibrary.ShotData = ShotLibrary.get_shot(direction, GameConstants.ShotElevation.GROUNDED)
-	var lofted_shot: ShotLibrary.ShotData = ShotLibrary.get_shot(direction, GameConstants.ShotElevation.LOFTED)
+func _on_shot_sector_changed(sector_name: String) -> void:
 	if shot_name_label:
-		shot_name_label.text = "Target: %s / %s" % [grounded_shot.name, lofted_shot.name]
+		shot_name_label.text = "Target: %s" % sector_name
 
 func _on_shot_button_pressed(elevation: GameConstants.ShotElevation) -> void:
-	if batsman and not is_bowling_role:
-		var result: TimingEngine.TimingResult = batsman.trigger_shot(elevation)
-		if result:
-			_display_timing_feedback(result)
+	if not batsman:
+		return
+		
+	var result := batsman.trigger_shot(elevation)
+	if result:
+		_show_timing_feedback(result)
 
-func _on_shot_executed(result: TimingEngine.TimingResult) -> void:
-	_display_timing_feedback(result)
-
-func _on_shot_missed() -> void:
-	if timing_banner:
-		timing_banner.text = "BEATEN / MISSED"
-		timing_banner.modulate = Color(0.65, 0.25, 0.25)
-		timing_banner.visible = true
-		_start_fade_timer()
-
-func _display_timing_feedback(result: TimingEngine.TimingResult) -> void:
+func _show_timing_feedback(result: TimingEngine.TimingResult) -> void:
 	if not timing_banner:
 		return
 		
-	timing_banner.visible = true
 	timing_banner.text = result.feedback_text
-	timing_banner.modulate = result.rating_color
+	timing_banner.visible = true
 	
-	if stats_label:
-		if result.rating != GameConstants.TimingRating.MISSED:
-			stats_label.text = "%s | Timing: %+.0f ms | Speed: %.1f km/h | Launch: %.1f°" % [
-				result.shot_name,
-				result.delta_ms,
-				result.exit_speed_kmh,
-				result.launch_angle_deg
-			]
-		else:
-			stats_label.text = "%s | Timing: %+.0f ms" % [result.shot_name, result.delta_ms]
+	match result.rating:
+		GameConstants.TimingRating.PERFECT:
+			timing_banner.modulate = Color(0.1, 1.0, 0.4) # Bright Green
+		GameConstants.TimingRating.EARLY, GameConstants.TimingRating.LATE:
+			timing_banner.modulate = Color(0.95, 0.85, 0.1) # Yellow
+		GameConstants.TimingRating.TOO_EARLY, GameConstants.TimingRating.TOO_LATE:
+			timing_banner.modulate = Color(1.0, 0.5, 0.1) # Orange
+		GameConstants.TimingRating.EDGE_OUTSIDE, GameConstants.TimingRating.EDGE_INSIDE:
+			timing_banner.modulate = Color(0.9, 0.3, 0.9) # Purple edge
+		_:
+			timing_banner.modulate = Color(0.9, 0.2, 0.2) # Red missed
 			
-	# Camera automatic switch to ball chase on good hits
-	if result.rating in [GameConstants.TimingRating.PERFECT, GameConstants.TimingRating.EARLY, GameConstants.TimingRating.LATE] and camera_controller:
-		camera_controller.set_camera_mode(BroadcastCamera.CameraMode.BALL_TRACKING)
-		
 	_start_fade_timer()
 
 func _start_fade_timer() -> void:
-	var timer := get_tree().create_timer(2.2)
-	timer.timeout.connect(_hide_timing_banner)
-
-func _hide_timing_banner() -> void:
-	if timing_banner:
+	var tween := create_tween()
+	tween.tween_interval(1.2)
+	tween.tween_property(timing_banner, "modulate:a", 0.0, 0.4)
+	tween.finished.connect(func():
 		timing_banner.visible = false
+		timing_banner.modulate.a = 1.0
+	)
 
 func _on_camera_button_pressed() -> void:
 	if camera_controller:
 		camera_controller.cycle_camera_mode()
-	camera_toggle_requested.emit()
 
 func _on_camera_mode_changed(mode_name: String) -> void:
 	if camera_btn:

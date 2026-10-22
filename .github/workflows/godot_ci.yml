@@ -95,12 +95,6 @@ jobs:
         if: steps.cache-godot-templates.outputs.cache-hit != 'true'
         run: |
           mkdir -p /tmp/godot
-          wget -q https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-${GODOT_STATUS}/Godot_v${GODOT_VERSION}-${GODOT_STATUS}_linux.x86_64.zip -O /tmp/godot.zip
-          unzip -q /tmp/godot.zip -d /tmp/godot
-          mv /tmp/godot/Godot_v${GODOT_VERSION}-${GODOT_STATUS}_linux.x86_64 /tmp/godot/godot
-          chmod +x /tmp/godot/godot
-
-          mkdir -p ~/.local/share/godot/export_templates/${GODOT_VERSION}.${GODOT_STATUS}
           wget -q https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-${GODOT_STATUS}/Godot_v${GODOT_VERSION}-${GODOT_STATUS}_export_templates.tpz -O /tmp/templates.tpz
           unzip -q /tmp/templates.tpz -d /tmp/templates
           mv /tmp/templates/templates/* ~/.local/share/godot/export_templates/${GODOT_VERSION}.${GODOT_STATUS}/
@@ -154,30 +148,36 @@ jobs:
         uses: softprops/action-gh-release@v2
         if: github.ref == 'refs/heads/main'
         with:
-          tag_name: v3.2.0-cinematics-pause-and-navigation
-          name: "CricStrike 3D v3.2.0 (In-Match Pause Menu, Broadcast Cinematics & Locker Room Navigation)"
+          tag_name: v4.0.0-pro-broadcast-edition
+          name: "CricStrike 3D v4.0.0 (Broadcast Replay System, Stadium Crowd & Flags, Audio Commentary & Celebrations)"
           body: |
-            ### CricStrike 3D - In-Match Pause Menu, Broadcast Cinematics & Locker Room Navigation (v3.2.0)
-            100% Offline 3D Mobile Cricket Game inspired by "Real Cricket" and "WCC2" built in Godot Engine 4.3.
+            ### CricStrike 3D - Pro Broadcast & International Stadium Edition (v4.0.0)
+            100% Offline 3D Mobile Cricket Game inspired by "Real Cricket 3D" and "WCC3" built in Godot Engine 4.3.
 
-            #### Major Upgrades in v3.2.0:
-            - **In-Match Pause Menu & Exit Navigation**:
-              - Added dedicated "⏸ PAUSE" button in the HUD and full-screen Pause Overlay with "▶ RESUME MATCH", "🎥 CAMERA ANGLE", "🔄 RESTART MATCH", and "🏠 EXIT TO MAIN MENU".
-              - Fully wired to Android hardware and gesture Back navigation (`NOTIFICATION_WM_GO_BACK_REQUEST` / `ui_cancel`) so players are never trapped.
-            - **Locker Room Fix & 3D Athlete Pedestal**:
-              - Upgraded Locker Room pedestal from capsule mannequin to authentic 3D humanoid athlete model (`Ty.fbx`) with real cricket batting stance animation.
-              - Wired "Save" and "Back" buttons to successfully persist custom loadouts and return cleanly to the Main Menu.
-            - **Auto Delivery Delivery Loop & Fluid Gameplay**:
-              - Matches now auto-bowl deliveries smoothly after a 1.2s broadcast warm-up and 2.2s between deliveries, eliminating frozen states and manual debugging triggers.
-              - Prominent touch-friendly "▶ BOWL NOW" button allows immediate delivery launching at any time.
-            - **Broadcast Cinematics & Umpire Reactions**:
-              - Boundary 4s and 6s now trigger automatic ball-tracking camera cut, stadium crowd cheers, slow motion (0.8x), and boundary flare banners.
-              - Wickets (Bowled, Caught) trigger Bowler Umpire out decision signal (`signal_out()`), Umpire POV camera cut, stump shatter rattle SFX, and dismissal banner.
-            - **All 6 Camera POVs**:
-              - Behind Batsman, Helmet POV (First-person batting), Bowler POV, Umpire POV, Broadcast TV, and Ball Tracking.
+            #### Major Upgrades in v4.0.0:
+            1. **Broadcast Replay System**:
+               - Automatically triggers a 3-second multi-angle slow-motion (0.45x) TV replay after every boundary (4 or 6) and wicket dismissal.
+               - Dynamic camera transitions through 3 angles: Pitch Delivery Cam, Crease Impact Cam, and Reverse Sky Cam.
+               - Prominent, glowing touch-friendly **"⏩ SKIP REPLAY"** button allowing players to instantly skip the replay and resume live play.
+            2. **Animated Stadium Crowd, Waving Team Flags & Flashlights**:
+               - Massive 3-tiered international grandstand bowl populated with animated spectators performing traveling Mexican waves and cheering surges.
+               - 16 fluttering team flagpoles positioned along the grandstand rim with realistic wind simulation.
+               - 48+ twinkling smartphone LED flashlight emitters scattered across the grandstands, creating an authentic packed stadium atmosphere.
+            3. **Procedural Situational Audio Commentary**:
+               - Dynamic situational commentary lines triggered on match events (e.g., *"Smacked straight down the ground for a maximum!"*, *"In the air... and it's taken!"*, *"Timber! Clean bowled through the gate!"*).
+               - Real-time TV broadcast commentary subtitle banner with animated sound-wave equalizer.
+               - Synthesized broadcast audio stingers, commentary chimes, replay whooshes, and standing ovation applause.
+            4. **Player Celebration Animations**:
+               - Bowler Wicket Celebration: Bowler leaps in jubilation with high-five arm gesture and acoustic handclap SFX on every dismissal.
+               - Batsman Bat-Raise Gesture: Batsman raises bat high to the crowd and pavilion on reaching a half-century (50 runs) accompanied by standing ovation roars.
+            5. **In-Game Graphics Overlays & Massive 3D Stadium**:
+               - TV Broadcast Score Bar anchored at the bottom of the screen with team badges, live overs, CRR, RRR, active batsmen stats, bowler figures, and over ball badges.
+               - Bowler Card lower-third graphics card sliding in on new overs with full bowling spell figures.
+               - Batsman 360° Wagon Wheel pop-up overlay with zone breakdown and shot trajectory radar.
+               - International Stadium 3D Model: Pristine rectangular green turf pitch, white boundary foam ropes with sponsor wedges, 4 giant 38m LED floodlight towers, dual electronic broadcast jumbo scoreboards, and player dugouts under a clear blue daylight sky dome.
 
             - **Direct Download**: Tap `cricstrike_3d.apk` below directly to install on your phone.
-            - **Signatures**: Verified with APK Signature Schemes v1, v2, and v3 (compatible with Android 8 - 15).
+            - **Signatures**: Verified with APK Signature Schemes v1, v2, and v3 (compatible with Android 8 - 15+).
             - **Architectures**: arm64-v8a + armeabi-v7a.
           files: build/cricstrike_3d.apk
         env:
