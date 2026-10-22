@@ -145,6 +145,10 @@ func _physics_process(delta: float) -> void:
 		
 		if bowler_node:
 			bowler_node.global_position = bowler_start_runup_pos.lerp(bowler_crease_pos, _runup_progress)
+			# Animate 360-degree bowling arm windmill rotation during delivery stride
+			var arm_pivot := bowler_node.get_node_or_null("BowlingArmPivot") as Node3D
+			if arm_pivot:
+				arm_pivot.rotation_degrees.x = -_runup_progress * 360.0
 			
 		if _runup_progress >= 1.0:
 			_release_ball()

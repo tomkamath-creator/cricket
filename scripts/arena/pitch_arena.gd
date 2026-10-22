@@ -165,8 +165,7 @@ func set_difficulty(diff: GameConstants.Difficulty) -> void:
 
 func _on_camera_toggle() -> void:
 	if broadcast_camera:
-		var next := (int(broadcast_camera.current_mode) + 1) % 4
-		broadcast_camera.set_camera_mode(next as BroadcastCamera.CameraMode)
+		broadcast_camera.cycle_camera_mode()
 
 func _on_ball_stopped() -> void:
 	if bowling_controller:

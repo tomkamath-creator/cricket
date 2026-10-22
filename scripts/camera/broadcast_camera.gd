@@ -7,7 +7,9 @@ enum CameraMode {
 	BEHIND_BATSMAN,
 	BROADCAST_SIDE,
 	BALL_TRACKING,
-	BOWLER_END
+	BOWLER_END,
+	UMPIRE_POV,
+	BATSMAN_HELMET_POV
 }
 
 @export var current_mode: CameraMode = CameraMode.BEHIND_BATSMAN
@@ -22,6 +24,12 @@ var _look_behind_batsman := Vector3(0.0, 0.85, 0.0)
 var _pos_broadcast_side := Vector3(-26.0, 10.5, 2.0)
 var _pos_bowler_end := Vector3(0.0, 3.2, -15.5)
 var _look_bowler_end := Vector3(0.0, 0.9, 8.0)
+
+var _pos_umpire_pov := Vector3(0.0, 1.82, -12.4)
+var _look_umpire_pov := Vector3(0.0, 0.85, 9.5)
+
+var _pos_batsman_pov := Vector3(0.15, 1.68, 9.15)
+var _look_batsman_pov := Vector3(0.0, 0.9, -10.0)
 
 var _target_pos: Vector3
 var _target_look_at: Vector3
@@ -47,6 +55,14 @@ func set_camera_mode(mode: CameraMode) -> void:
 			_target_pos = _pos_bowler_end
 			_target_look_at = _look_bowler_end
 			fov = 55.0
+		CameraMode.UMPIRE_POV:
+			_target_pos = _pos_umpire_pov
+			_target_look_at = _look_umpire_pov
+			fov = 52.0
+		CameraMode.BATSMAN_HELMET_POV:
+			_target_pos = _pos_batsman_pov
+			_target_look_at = _look_batsman_pov
+			fov = 68.0
 		CameraMode.BALL_TRACKING:
 			fov = 52.0
 
@@ -81,5 +97,8 @@ func _physics_process(delta: float) -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("switch_camera"):
-		var next_mode := (int(current_mode) + 1) % 4
-		set_camera_mode(next_mode as CameraMode)
+		cycle_camera_mode()
+
+func cycle_camera_mode() -> void:
+	var next_mode := (int(current_mode) + 1) % 6
+	set_camera_mode(next_mode as CameraMode)

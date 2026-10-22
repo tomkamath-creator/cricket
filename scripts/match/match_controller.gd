@@ -13,7 +13,7 @@ const FieldingManager = preload("res://scripts/fielding/fielding_manager.gd")
 const BowlingController = preload("res://scripts/bowling/bowling_controller.gd")
 const BattingController = preload("res://scripts/batting/batting_controller.gd")
 const CricketBall = preload("res://scripts/physics/cricket_ball.gd")
-const BowlerTypes = preload("res://scripts/bowling/bowler_types.gd")
+const GameModeManager = preload("res://scripts/modes/game_mode_manager.gd")
 const ScoreboardUI = preload("res://scripts/ui/scoreboard_ui.gd")
 const WagonWheelView = preload("res://scripts/ui/wagon_wheel_view.gd")
 
@@ -33,7 +33,10 @@ var _current_shot_heading: float = 0.0
 var _current_ball_resolved: bool = false
 
 func _ready() -> void:
-	scoreboard = ScoreboardData.new(5, -1)
+	var mode_mgr := GameModeManager.get_instance()
+	var overs := mode_mgr.selected_overs if mode_mgr else 5
+	var target := mode_mgr.super_over_target if (mode_mgr and mode_mgr.current_mode == GameModeManager.Mode.SUPER_OVER and mode_mgr.player_is_chasing) else -1
+	scoreboard = ScoreboardData.new(overs, target)
 	if scoreboard_ui:
 		scoreboard_ui.bind_scoreboard(scoreboard)
 		scoreboard_ui.wagon_wheel_toggled.connect(_on_wagon_wheel_toggled)
