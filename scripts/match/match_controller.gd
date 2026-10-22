@@ -13,7 +13,7 @@ const FieldingManager = preload("res://scripts/fielding/fielding_manager.gd")
 const BowlingController = preload("res://scripts/bowling/bowling_controller.gd")
 const BattingController = preload("res://scripts/batting/batting_controller.gd")
 const CricketBall = preload("res://scripts/physics/cricket_ball.gd")
-const GameModeManager = preload("res://scripts/modes/game_mode_manager.gd")
+const AudioManager = preload("res://scripts/audio/audio_manager.gd")
 const ScoreboardUI = preload("res://scripts/ui/scoreboard_ui.gd")
 const WagonWheelView = preload("res://scripts/ui/wagon_wheel_view.gd")
 
@@ -71,6 +71,10 @@ func _on_ball_hit(exit_speed_kmh: float, launch_angle_deg: float, direction_vec:
 	_current_ball_has_bat_hit = true
 	_current_ball_exit_vel = direction_vec * GameConstants.kmh_to_mps(exit_speed_kmh)
 	
+	var audio := AudioManager.get_instance()
+	if audio:
+		audio.play_bat_crack(exit_speed_kmh > 120.0 and launch_angle_deg > 20.0)
+	
 	# Calculate 0-360 deg heading in stadium ground plane
 	var heading_rad := atan2(direction_vec.x, -direction_vec.z)
 	_current_shot_heading = fposmod(rad_to_deg(heading_rad), 360.0)
@@ -90,6 +94,10 @@ func _on_ball_boundary(runs: int) -> void:
 	_reset_for_next_ball()
 
 func _on_stump_collision(_stump: Node, _speed: float) -> void:
+	var audio := AudioManager.get_instance()
+	if audio:
+		audio.play_stump_rattle()
+		
 	if _current_ball_resolved:
 		return
 	_current_ball_resolved = true

@@ -14,6 +14,7 @@
 [ext_resource type="Script" path="res://scripts/match/match_controller.gd" id="12_match"]
 [ext_resource type="PackedScene" uid="uid://umpire001" path="res://scenes/umpire.tscn" id="13_umpire"]
 [ext_resource type="PackedScene" uid="uid://bowler001" path="res://scenes/bowler.tscn" id="14_bowler"]
+[ext_resource type="Script" path="res://scripts/audio/audio_manager.gd" id="15_audio"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_1"]
 sky_top_color = Color(0.24, 0.52, 0.88, 1)
@@ -110,6 +111,9 @@ fov = 58.0
 script = ExtResource("6_cam")
 ball_target = NodePath("../CricketBall")
 batsman_target = NodePath("../Batsman")
+
+[node name="AudioManager" type="Node" parent="."]
+script = ExtResource("15_audio")
 
 [node name="BattingHUD" parent="." node_paths=PackedStringArray("batsman", "ball", "camera_controller") instance=ExtResource("7_hud")]
 batsman = NodePath("../Batsman")

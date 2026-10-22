@@ -3,6 +3,9 @@
 class_name CricketBall
 extends RigidBody3D
 
+const GameConstants = preload("res://scripts/core/game_constants.gd")
+const AudioManager = preload("res://scripts/audio/audio_manager.gd")
+
 signal ball_delivered(initial_speed_kmh: float, target_pos: Vector3)
 signal ball_pitched(pitch_position: Vector3, speed_kmh: float)
 signal ball_hit(exit_speed_kmh: float, launch_angle_deg: float, direction_vector: Vector3)
@@ -168,6 +171,10 @@ func _on_body_entered(body: Node) -> void:
 			var seam_rad := deg_to_rad(seam_tilt_deg)
 			var post_bounce_vel := pitch_conditions.calculate_pitch_bounce(_last_velocity, spin_vector, seam_rad)
 			linear_velocity = post_bounce_vel
+			
+			var audio := AudioManager.get_instance()
+			if audio:
+				audio.play_ball_bounce()
 			
 			ball_pitched.emit(pitch_point, GameConstants.mps_to_kmh(linear_velocity.length()))
 
