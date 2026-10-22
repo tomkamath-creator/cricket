@@ -285,5 +285,29 @@ func _on_auction_pass_hammer_pressed() -> void:
 		auction_engine.save_to_file()
 		_refresh_auction_view()
 
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_WM_GO_BACK_REQUEST:
+		_handle_back_request()
+
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("ui_cancel"):
+		_handle_back_request()
+		get_viewport().set_input_as_handled()
+
+func _handle_back_request() -> void:
+	if quick_match_panel and quick_match_panel.visible:
+		_hide_all_modals()
+	elif tournament_panel and tournament_panel.visible:
+		_hide_all_modals()
+	elif super_over_panel and super_over_panel.visible:
+		_hide_all_modals()
+	elif auction_panel and auction_panel.visible:
+		_hide_all_modals()
+	elif asset_panel and asset_panel.visible:
+		_hide_all_modals()
+	else:
+		# Already on main hub - minimize or quit game
+		get_tree().quit()
+
 func _on_modal_close_pressed() -> void:
 	_hide_all_modals()

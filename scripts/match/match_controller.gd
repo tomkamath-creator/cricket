@@ -16,6 +16,8 @@ const CricketBall = preload("res://scripts/physics/cricket_ball.gd")
 const AudioManager = preload("res://scripts/audio/audio_manager.gd")
 const ScoreboardUI = preload("res://scripts/ui/scoreboard_ui.gd")
 const WagonWheelView = preload("res://scripts/ui/wagon_wheel_view.gd")
+const BroadcastCamera = preload("res://scripts/camera/broadcast_camera.gd")
+const UmpireController = preload("res://scripts/umpire/umpire_controller.gd")
 
 @export var ball_ref: CricketBall
 @export var batsman_ref: BattingController
@@ -23,6 +25,8 @@ const WagonWheelView = preload("res://scripts/ui/wagon_wheel_view.gd")
 @export var fielding_manager: FieldingManager
 @export var scoreboard_ui: ScoreboardUI
 @export var wagon_wheel_view: WagonWheelView
+@export var broadcast_camera: BroadcastCamera
+@export var bowler_umpire: UmpireController
 
 var scoreboard: ScoreboardData
 
@@ -91,6 +95,21 @@ func _on_ball_boundary(runs: int) -> void:
 	var shot_dist := GameConstants.BOUNDARY_RADIUS_Z
 	scoreboard.record_delivery(call, _current_shot_heading, shot_dist, runs == 6)
 	match_state_updated.emit(call.call_text)
+	
+	# Boundary cinematics: ball tracking camera + crowd roar + dramatic slow-motion
+	if broadcast_camera:
+		broadcast_camera.set_camera_mode(BroadcastCamera.CameraMode.BALL_TRACKING)
+	var audio := AudioManager.get_instance()
+	if audio:
+		audio.play_crowd_cheer(runs == 6)
+		
+	Engine.time_scale = 0.8
+	var slow_timer := get_tree().create_timer(1.8, true, false, true)
+	slow_timer.timeout.connect(func():
+		Engine.time_scale = 1.0
+		if broadcast_camera:
+			broadcast_camera.set_camera_mode(BroadcastCamera.CameraMode.BEHIND_BATSMAN)
+	)
 	_reset_for_next_ball()
 
 func _on_stump_collision(_stump: Node, _speed: float) -> void:
@@ -105,6 +124,9 @@ func _on_stump_collision(_stump: Node, _speed: float) -> void:
 	var call := UmpireRules.evaluate_bowled(true)
 	scoreboard.record_delivery(call, _current_shot_heading, 0.0, false)
 	match_state_updated.emit(call.call_text)
+	
+	# Wicket cinematics: Bowler Umpire out signal + Umpire POV cut + slow-motion
+	_trigger_wicket_cinematics()
 	_reset_for_next_ball()
 
 func _on_ball_caught(f_name: String) -> void:
@@ -117,7 +139,27 @@ func _on_ball_caught(f_name: String) -> void:
 		call.call_text = "OUT! CAUGHT by %s!" % f_name
 		scoreboard.record_delivery(call, _current_shot_heading, 25.0, true)
 		match_state_updated.emit(call.call_text)
+		
+	# Wicket cinematics
+	_trigger_wicket_cinematics()
 	_reset_for_next_ball()
+
+func _trigger_wicket_cinematics() -> void:
+	if bowler_umpire:
+		bowler_umpire.signal_out()
+	if broadcast_camera:
+		broadcast_camera.set_camera_mode(BroadcastCamera.CameraMode.UMPIRE_POV)
+	var audio := AudioManager.get_instance()
+	if audio:
+		audio.play_crowd_cheer(false)
+		
+	Engine.time_scale = 0.75
+	var out_timer := get_tree().create_timer(2.4, true, false, true)
+	out_timer.timeout.connect(func():
+		Engine.time_scale = 1.0
+		if broadcast_camera:
+			broadcast_camera.set_camera_mode(BroadcastCamera.CameraMode.BEHIND_BATSMAN)
+	)
 
 func _on_ball_fielded(f_name: String) -> void:
 	if _current_ball_resolved:

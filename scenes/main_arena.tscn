@@ -95,7 +95,7 @@ ball_ref = NodePath("../CricketBall")
 [node name="Fielder10" parent="FieldingManager" instance=ExtResource("11_fielder")]
 [node name="Fielder11" parent="FieldingManager" instance=ExtResource("11_fielder")]
 
-[node name="MatchController" type="Node" parent="." node_paths=PackedStringArray("ball_ref", "batsman_ref", "bowling_controller", "fielding_manager", "scoreboard_ui", "wagon_wheel_view")]
+[node name="MatchController" type="Node" parent="." node_paths=PackedStringArray("ball_ref", "batsman_ref", "bowling_controller", "fielding_manager", "scoreboard_ui", "wagon_wheel_view", "broadcast_camera", "bowler_umpire")]
 script = ExtResource("12_match")
 ball_ref = NodePath("../CricketBall")
 batsman_ref = NodePath("../Batsman")
@@ -103,6 +103,8 @@ bowling_controller = NodePath("../BowlingController")
 fielding_manager = NodePath("../FieldingManager")
 scoreboard_ui = NodePath("../BattingHUD/ScoreboardUI")
 wagon_wheel_view = NodePath("../BattingHUD/WagonWheelView")
+broadcast_camera = NodePath("../BroadcastCamera")
+bowler_umpire = NodePath("../BowlerUmpire")
 
 [node name="BroadcastCamera" type="Camera3D" parent="." node_paths=PackedStringArray("ball_target", "batsman_target")]
 transform = Transform3D(1, 0, 0, 0, 0.978148, 0.207912, 0, -0.207912, 0.978148, 0, 1.85, 13.8)

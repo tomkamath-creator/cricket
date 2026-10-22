@@ -29,6 +29,7 @@ const BowlerTypes = preload("res://scripts/bowling/bowler_types.gd")
 
 var current_pitch_conditions: PitchConditions
 var is_player_bowling_mode: bool = false
+var _auto_timer: SceneTreeTimer = null
 
 func _ready() -> void:
 	current_pitch_conditions = PitchConditions.new(GameConstants.PitchType.FLAT)
@@ -75,6 +76,13 @@ func _ready() -> void:
 			hud.bowling_meters_ui.lock_swing_pressed.connect(_on_player_lock_swing)
 			hud.bowling_meters_ui.lock_speed_pressed.connect(_on_player_lock_speed)
 
+	# Auto-start first ball after short broadcast warm-up
+	var warm_timer := get_tree().create_timer(1.2)
+	warm_timer.timeout.connect(func():
+		if bowling_controller and bowling_controller.current_state == BowlingController.BowlingState.IDLE:
+			start_bowling_delivery(is_player_bowling_mode)
+	)
+
 func _on_role_toggled(is_bowling: bool) -> void:
 	is_player_bowling_mode = is_bowling
 	if is_bowling:
@@ -83,11 +91,9 @@ func _on_role_toggled(is_bowling: bool) -> void:
 		if bowling_controller:
 			bowling_controller.complete_delivery()
 
-func _on_hud_deliver_requested(speed_kmh: float, swing: float, seam: float, target_pos: Vector3) -> void:
-	if is_player_bowling_mode:
-		start_bowling_delivery(true)
-	else:
-		start_bowling_delivery(false)
+func _on_hud_deliver_requested(_speed_kmh: float, _swing: float, _seam: float, _target_pos: Vector3) -> void:
+	_auto_timer = null
+	start_bowling_delivery(is_player_bowling_mode)
 
 func start_bowling_delivery(player_is_bowler: bool) -> void:
 	if not ball or not bowling_controller:
@@ -136,7 +142,14 @@ func _on_delivery_released(del_config: BowlerTypes.DeliveryConfig) -> void:
 		]
 
 func _on_delivery_completed() -> void:
-	pass
+	# Automatically queue and start next ball after 2.2s so match flows continuously
+	if _auto_timer:
+		_auto_timer = null
+	_auto_timer = get_tree().create_timer(2.2)
+	_auto_timer.timeout.connect(func():
+		if bowling_controller and bowling_controller.current_state == BowlingController.BowlingState.IDLE:
+			start_bowling_delivery(is_player_bowling_mode)
+	)
 
 func set_pitch_condition(type: GameConstants.PitchType) -> void:
 	current_pitch_conditions.apply_pitch_type(type)

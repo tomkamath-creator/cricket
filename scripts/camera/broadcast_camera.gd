@@ -23,15 +23,15 @@ enum CameraMode {
 var _pos_behind_batsman := Vector3(0.0, 3.2, 14.5)
 var _look_behind_batsman := Vector3(0.0, 0.85, 0.0)
 
-var _pos_broadcast_side := Vector3(-26.0, 10.5, 2.0)
-var _pos_bowler_end := Vector3(0.0, 3.2, -15.5)
-var _look_bowler_end := Vector3(0.0, 0.9, 8.0)
+var _pos_broadcast_side := Vector3(-24.0, 8.5, 0.0)
+var _pos_bowler_end := Vector3(0.4, 2.9, -17.5)
+var _look_bowler_end := Vector3(0.15, 0.85, 9.05)
 
-var _pos_umpire_pov := Vector3(0.0, 1.82, -12.4)
-var _look_umpire_pov := Vector3(0.0, 0.85, 9.5)
+var _pos_umpire_pov := Vector3(0.0, 1.88, -13.2)
+var _look_umpire_pov := Vector3(0.15, 0.85, 9.05)
 
-var _pos_batsman_pov := Vector3(0.15, 1.68, 9.15)
-var _look_batsman_pov := Vector3(0.0, 0.9, -10.0)
+var _pos_batsman_pov := Vector3(0.15, 1.65, 9.15)
+var _look_batsman_pov := Vector3(0.4, 1.1, -16.0)
 
 var _target_pos: Vector3
 var _target_look_at: Vector3

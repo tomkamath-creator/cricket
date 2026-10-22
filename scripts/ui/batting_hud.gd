@@ -36,7 +36,13 @@ const BowlingMetersUI = preload("res://scripts/ui/bowling_meters_ui.gd")
 @onready var difficulty_btn: Button = $TopRightControls/DifficultyButton
 @onready var camera_btn: Button = $TopRightControls/CameraButton
 @onready var role_btn: Button = $TopRightControls/RoleButton
+@onready var pause_btn: Button = get_node_or_null("TopRightControls/PauseButton")
 @onready var bowling_meters_ui: BowlingMetersUI = $BowlingMetersUI
+@onready var pause_menu: Control = get_node_or_null("PauseMenu")
+@onready var resume_btn: Button = get_node_or_null("PauseMenu/Center/Panel/Margin/VBox/ResumeBtn")
+@onready var pause_camera_btn: Button = get_node_or_null("PauseMenu/Center/Panel/Margin/VBox/PauseCameraBtn")
+@onready var restart_btn: Button = get_node_or_null("PauseMenu/Center/Panel/Margin/VBox/RestartBtn")
+@onready var exit_menu_btn: Button = get_node_or_null("PauseMenu/Center/Panel/Margin/VBox/ExitMenuBtn")
 
 var current_difficulty: GameConstants.Difficulty = GameConstants.Difficulty.MEDIUM
 var current_pitch_type: GameConstants.PitchType = GameConstants.PitchType.FLAT
@@ -76,6 +82,59 @@ func _ready() -> void:
 		_on_camera_mode_changed(camera_controller.get_mode_name())
 	if role_btn:
 		role_btn.pressed.connect(_on_toggle_role)
+	if pause_btn:
+		pause_btn.pressed.connect(_on_pause_pressed)
+	if resume_btn:
+		resume_btn.pressed.connect(_on_resume_pressed)
+	if pause_camera_btn:
+		pause_camera_btn.pressed.connect(_on_pause_camera_pressed)
+	if restart_btn:
+		restart_btn.pressed.connect(_on_restart_pressed)
+	if exit_menu_btn:
+		exit_menu_btn.pressed.connect(_on_exit_menu_pressed)
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_WM_GO_BACK_REQUEST:
+		_handle_back_request()
+
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("ui_cancel"):
+		_handle_back_request()
+		get_viewport().set_input_as_handled()
+
+func _handle_back_request() -> void:
+	if pause_menu and pause_menu.visible:
+		_on_resume_pressed()
+	else:
+		_on_pause_pressed()
+
+func _on_pause_pressed() -> void:
+	if pause_menu:
+		pause_menu.visible = true
+		get_tree().paused = true
+		_update_pause_camera_btn_text()
+
+func _on_resume_pressed() -> void:
+	if pause_menu:
+		pause_menu.visible = false
+		get_tree().paused = false
+
+func _on_pause_camera_pressed() -> void:
+	if camera_controller:
+		camera_controller.cycle_camera_mode()
+	_update_pause_camera_btn_text()
+
+func _update_pause_camera_btn_text() -> void:
+	if pause_camera_btn and camera_controller:
+		pause_camera_btn.text = "🎥 CAMERA: %s" % camera_controller.get_mode_name().to_upper()
+
+func _on_restart_pressed() -> void:
+	get_tree().paused = false
+	get_tree().reload_current_scene()
+
+func _on_exit_menu_pressed() -> void:
+	get_tree().paused = false
+	get_tree().change_scene_to_file("res://scenes/main_menu.tscn")
 		
 	# Connect Batsman signals
 	if batsman:
@@ -105,7 +164,7 @@ func _on_toggle_role() -> void:
 		bottom_left_controls.visible = true
 		bottom_right_controls.visible = true
 		shot_name_label.text = "Batting Mode Active"
-		stats_label.text = "Tap BOWL to face delivery | Use Joystick to aim shot"
+		stats_label.text = "Auto-Bowling Active | Joystick to aim | Tap Lofted/Grounded"
 		if bowling_meters_ui:
 			bowling_meters_ui.hide_meters()
 		if camera_controller:
@@ -182,6 +241,7 @@ func _on_camera_button_pressed() -> void:
 func _on_camera_mode_changed(mode_name: String) -> void:
 	if camera_btn:
 		camera_btn.text = "Cam: %s" % mode_name
+	_update_pause_camera_btn_text()
 
 func _on_bowl_debug_pressed() -> void:
 	var preset: Dictionary = _delivery_presets[_preset_index]

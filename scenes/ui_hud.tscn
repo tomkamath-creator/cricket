@@ -90,7 +90,7 @@ layout_mode = 2
 theme_override_colors/font_color = Color(0.9, 0.95, 1, 1)
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.8)
 theme_override_font_sizes/font_size = 14
-text = "Tap BOWL to play | Joystick to aim"
+text = "Auto-Bowling Active | Joystick to aim | Tap Lofted/Grounded"
 horizontal_alignment = 1
 
 [node name="CenterContainer" type="CenterContainer" parent="."]
@@ -134,7 +134,7 @@ text = "Role: Batting"
 
 [node name="BowlDebugButton" type="Button" parent="TopRightControls"]
 layout_mode = 2
-text = "BOWL (B)"
+text = "▶ BOWL NOW"
 
 [node name="PitchButton" type="Button" parent="TopRightControls"]
 layout_mode = 2
@@ -148,8 +148,95 @@ text = "Diff: Medium"
 layout_mode = 2
 text = "Cam (C)"
 
+[node name="PauseButton" type="Button" parent="TopRightControls"]
+process_mode = 3
+layout_mode = 2
+text = "⏸ PAUSE"
+
 [node name="BowlingMetersUI" parent="." instance=ExtResource("3_meters")]
 visible = false
 
 [node name="WagonWheelView" parent="." instance=ExtResource("5_wagon")]
 visible = false
+
+[node name="PauseMenu" type="Control" parent="."]
+process_mode = 3
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Backdrop" type="ColorRect" parent="PauseMenu"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.04, 0.06, 0.1, 0.8)
+
+[node name="Center" type="CenterContainer" parent="PauseMenu"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="PanelContainer" parent="PauseMenu/Center"]
+custom_minimum_size = Vector2(340, 360)
+layout_mode = 2
+
+[node name="Margin" type="MarginContainer" parent="PauseMenu/Center/Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 24
+
+[node name="VBox" type="VBoxContainer" parent="PauseMenu/Center/Panel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="Title" type="Label" parent="PauseMenu/Center/Panel/Margin/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+text = "MATCH PAUSED"
+horizontal_alignment = 1
+
+[node name="Subtitle" type="Label" parent="PauseMenu/Center/Panel/Margin/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.75, 0.95, 1)
+theme_override_font_sizes/font_size = 13
+text = "CricStrike 3D • Offline Match"
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="PauseMenu/Center/Panel/Margin/VBox"]
+layout_mode = 2
+
+[node name="ResumeBtn" type="Button" parent="PauseMenu/Center/Panel/Margin/VBox"]
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "▶ RESUME MATCH"
+
+[node name="PauseCameraBtn" type="Button" parent="PauseMenu/Center/Panel/Margin/VBox"]
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+text = "🎥 CAMERA: BEHIND BATSMAN"
+
+[node name="RestartBtn" type="Button" parent="PauseMenu/Center/Panel/Margin/VBox"]
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+text = "🔄 RESTART MATCH"
+
+[node name="ExitMenuBtn" type="Button" parent="PauseMenu/Center/Panel/Margin/VBox"]
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "🏠 EXIT TO MAIN MENU"

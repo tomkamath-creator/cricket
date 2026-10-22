@@ -192,13 +192,28 @@ func _on_grill_toggled(toggled_on: bool) -> void:
 		var p := locker_room_controller.active_profile
 		locker_room_controller.set_equipment_colors(p.pads_color, p.helmet_color, toggled_on)
 
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_WM_GO_BACK_REQUEST:
+		_on_back_pressed()
+
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("ui_cancel"):
+		_on_back_pressed()
+		get_viewport().set_input_as_handled()
+
 func _on_save_pressed() -> void:
 	if locker_room_controller:
 		var ok := locker_room_controller.save_customization()
 		if status_label:
-			status_label.text = "Saved to user://custom_players.json!" if ok else "Failed to save profile."
+			status_label.text = "Saved! Returning to menu..." if ok else "Failed to save profile."
 			status_label.modulate = Color.GREEN if ok else Color.RED
 		player_saved.emit()
+		if ok:
+			var timer := get_tree().create_timer(0.6)
+			timer.timeout.connect(func():
+				get_tree().change_scene_to_file("res://scenes/main_menu.tscn")
+			)
 
 func _on_back_pressed() -> void:
 	back_pressed.emit()
+	get_tree().change_scene_to_file("res://scenes/main_menu.tscn")

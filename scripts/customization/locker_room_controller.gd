@@ -8,9 +8,8 @@ signal customization_saved(profile: PlayerProfile)
 signal exited_to_menu()
 
 const PlayerProfile = preload("res://scripts/player/player_profile.gd")
-const PlayerVisuals = preload("res://scripts/player/player_visuals.gd")
 
-@onready var character_visuals: PlayerVisuals = $CharacterModel
+@onready var character_visuals: Node3D = $CharacterModel
 @onready var camera_pivot: Node3D = $CameraPivot
 @onready var inspection_camera: Camera3D = $CameraPivot/Camera3D
 

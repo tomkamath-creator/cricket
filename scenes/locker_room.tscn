@@ -1,7 +1,7 @@
 [gd_scene load_steps=7 format=3 uid="uid://lockerroom001"]
 
 [ext_resource type="Script" path="res://scripts/customization/locker_room_controller.gd" id="1_ctrl"]
-[ext_resource type="PackedScene" uid="uid://charactermodel001" path="res://scenes/character_model.tscn" id="2_char"]
+[ext_resource type="PackedScene" uid="uid://lockerathlete001" path="res://scenes/locker_room_athlete.tscn" id="2_char"]
 [ext_resource type="PackedScene" uid="uid://customstudioui001" path="res://scenes/customization_studio_ui.tscn" id="3_ui"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_1"]

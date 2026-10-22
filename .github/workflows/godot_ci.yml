@@ -154,17 +154,27 @@ jobs:
         uses: softprops/action-gh-release@v2
         if: github.ref == 'refs/heads/main'
         with:
-          tag_name: v3.1.0-upright-characters-and-downloader
-          name: "CricStrike 3D v3.1.0 (Upright Standing 3D Characters & In-Game Asset Downloader)"
+          tag_name: v3.2.0-cinematics-pause-and-navigation
+          name: "CricStrike 3D v3.2.0 (In-Match Pause Menu, Broadcast Cinematics & Locker Room Navigation)"
           body: |
-            ### CricStrike 3D - Upright 3D Characters & Dynamic Asset Downloader (v3.1.0)
+            ### CricStrike 3D - In-Match Pause Menu, Broadcast Cinematics & Locker Room Navigation (v3.2.0)
             100% Offline 3D Mobile Cricket Game inspired by "Real Cricket" and "WCC2" built in Godot Engine 4.3.
 
-            #### Major Upgrades in v3.1.0:
-            - **100% Upright Skeletal Poses**: Fixed coordinate space root rotation bug so batsman, bowler, 11 fielders, and umpires stand naturally on their feet rather than lying flat on the turf.
-            - **In-Game Dynamic HD Asset Downloader**: Built an in-game expansion downloader hub (like Real Cricket & WCC) allowing the game to maintain a fast, compact Play Store install size while dynamically downloading and mounting HD Stadiums, Commentary Audio, and Pro Team Kits via Godot's `ProjectSettings.load_resource_pack()`.
-            - **Motion-Captured Animation Suite**: Smooth batting stance, drive swings, lofted pulls, bowler run-up stride, overarm delivery, fielder pursuit sprint cycles, and wicketkeeper stance.
-            - **Multi-POV Cameras**: 6 dynamic camera modes (Behind Batsman, Helmet POV, Bowler POV, Umpire POV, Broadcast TV, Ball Tracking).
+            #### Major Upgrades in v3.2.0:
+            - **In-Match Pause Menu & Exit Navigation**:
+              - Added dedicated "⏸ PAUSE" button in the HUD and full-screen Pause Overlay with "▶ RESUME MATCH", "🎥 CAMERA ANGLE", "🔄 RESTART MATCH", and "🏠 EXIT TO MAIN MENU".
+              - Fully wired to Android hardware and gesture Back navigation (`NOTIFICATION_WM_GO_BACK_REQUEST` / `ui_cancel`) so players are never trapped.
+            - **Locker Room Fix & 3D Athlete Pedestal**:
+              - Upgraded Locker Room pedestal from capsule mannequin to authentic 3D humanoid athlete model (`Ty.fbx`) with real cricket batting stance animation.
+              - Wired "Save" and "Back" buttons to successfully persist custom loadouts and return cleanly to the Main Menu.
+            - **Auto Delivery Delivery Loop & Fluid Gameplay**:
+              - Matches now auto-bowl deliveries smoothly after a 1.2s broadcast warm-up and 2.2s between deliveries, eliminating frozen states and manual debugging triggers.
+              - Prominent touch-friendly "▶ BOWL NOW" button allows immediate delivery launching at any time.
+            - **Broadcast Cinematics & Umpire Reactions**:
+              - Boundary 4s and 6s now trigger automatic ball-tracking camera cut, stadium crowd cheers, slow motion (0.8x), and boundary flare banners.
+              - Wickets (Bowled, Caught) trigger Bowler Umpire out decision signal (`signal_out()`), Umpire POV camera cut, stump shatter rattle SFX, and dismissal banner.
+            - **All 6 Camera POVs**:
+              - Behind Batsman, Helmet POV (First-person batting), Bowler POV, Umpire POV, Broadcast TV, and Ball Tracking.
 
             - **Direct Download**: Tap `cricstrike_3d.apk` below directly to install on your phone.
             - **Signatures**: Verified with APK Signature Schemes v1, v2, and v3 (compatible with Android 8 - 15).
