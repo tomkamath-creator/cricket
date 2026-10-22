@@ -154,18 +154,20 @@ jobs:
         uses: softprops/action-gh-release@v2
         if: github.ref == 'refs/heads/main'
         with:
-          tag_name: v2.0.0-wcc2-animations
-          name: "CricStrike 3D v2.0.0 (WCC2 Style Animations & POVs)"
+          tag_name: v2.5.0-humanoid-models
+          name: "CricStrike 3D v2.5.0 (Rigged Humanoid Characters & Mocap Animations)"
           body: |
-            ### CricStrike 3D - Full Release v2.0.0
+            ### CricStrike 3D - Humanoid Models & Mocap Animations (v2.5.0)
             100% Offline 3D Mobile Cricket Game inspired by "Real Cricket" and "WCC2" built in Godot Engine 4.3.
 
-            #### What's in this version:
-            - **All Interactive Camera Angles**: Batsman Stance POV, Bowler POV, Umpire Ground POV, Ball Tracking Cinematic Cam, Broadcast Side Cam, Behind Batsman.
-            - **Live Bowler Run-Up & 360 Windmill Arm**: Real bowler sprints toward the crease and delivers the ball with full arm rotation.
-            - **Fielder Chase Kinematics**: Dynamic 11-player pursuit with running stride animations.
-            - **Lawn Grass Outfield & Clay Pitch Shaders**: Striped lawn outfield and textured soil pitch with bowler footmarks.
-            - **Main Menu, Tournaments & Auction**: Fully playable offline modes with saved states.
+            #### Major Upgrade in this Release:
+            - **Real Rigged 3D Humanoid Models**: Replaced all geometric primitive shapes with skinned, rigged 3D human models with skeletal armatures.
+            - **Skeletal Mocap Animations**:
+              - Bowler approach and delivery stride with running skeletal animation.
+              - 11 fielders sprinting and pursuing the ball with full skeletal running cycles.
+              - Batsman natural stance, bat tapping, and swing arcs.
+            - **Broadcast Audio SFX**: Real-time acoustic bat-crack on impact, turf ball bounces, and wooden stump shatter rattle.
+            - **Multiple Broadcast POVs**: 6 selectable interactive camera modes (Batsman POV, Helmet POV, Bowler POV, Umpire POV, Broadcast Side, Ball Tracking).
 
             - **Direct Download**: Tap `cricstrike_3d.apk` below directly to install on your phone.
             - **Signatures**: Verified with APK Signature Schemes v1, v2, and v3 (compatible with Android 8 - 15).

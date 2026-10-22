@@ -132,6 +132,9 @@ func _start_runup() -> void:
 	if bowler_node:
 		bowler_node.global_position = bowler_start_runup_pos
 		bowler_node.visible = true
+		var ap := bowler_node.get_node_or_null("HumanoidModel/AnimationPlayer") as AnimationPlayer
+		if ap:
+			ap.play("Animation")
 		
 	# Trigger difficulty-based marker fade during approach
 	if pitch_marker and not is_player_bowling:
@@ -175,6 +178,10 @@ func complete_delivery() -> void:
 	current_state = BowlingState.IDLE
 	bowling_state_changed.emit(current_state)
 	meters.reset()
+	if bowler_node:
+		var ap := bowler_node.get_node_or_null("HumanoidModel/AnimationPlayer") as AnimationPlayer
+		if ap:
+			ap.stop()
 	if pitch_marker:
 		pitch_marker.hide_immediate()
 	delivery_completed.emit()

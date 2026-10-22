@@ -25,7 +25,8 @@ var _bat_initial_rot: Vector3 = Vector3.ZERO
 var _bat_initial_pos: Vector3 = Vector3.ZERO
 var _idle_time: float = 0.0
 
-@onready var torso_node: Node3D = $Torso
+@onready var humanoid_model: Node3D = get_node_or_null("HumanoidModel")
+@onready var anim_player: AnimationPlayer = get_node_or_null("HumanoidModel/AnimationPlayer")
 
 func _ready() -> void:
 	if bat_node:
@@ -97,8 +98,8 @@ func _process(delta: float) -> void:
 		_idle_time += delta * 4.5
 		var bat_tap: float = sin(_idle_time) * 4.0
 		bat_node.rotation_degrees.x = _bat_initial_rot.x + bat_tap
-		if torso_node:
-			torso_node.position.y = 1.15 + (sin(_idle_time * 0.5) * 0.012)
+		if humanoid_model:
+			humanoid_model.position.y = (sin(_idle_time * 0.5) * 0.012)
 			
 	# Keyboard / Desktop fallback controls for testing
 	if Input.is_action_just_pressed("shot_grounded"):

@@ -37,8 +37,7 @@ var _throw_timer: float = 0.0
 var _run_cycle_time: float = 0.0
 
 @onready var mesh_root: Node3D = $MeshRoot
-@onready var left_leg: Node3D = $MeshRoot/LeftLeg
-@onready var right_leg: Node3D = $MeshRoot/RightLeg
+@onready var anim_player: AnimationPlayer = $MeshRoot/HumanoidModel/AnimationPlayer
 
 func _ready() -> void:
 	home_position = global_position
@@ -108,11 +107,9 @@ func _process_chase(delta: float) -> void:
 	_current_velocity = _current_velocity.move_toward(dir * sprint_speed, acceleration * delta)
 	global_position += _current_velocity * delta
 	
-	# Animate leg stride swing during pursuit sprint
-	_run_cycle_time += delta * 12.0
-	if left_leg and right_leg:
-		left_leg.rotation_degrees.x = sin(_run_cycle_time) * 35.0
-		right_leg.rotation_degrees.x = -sin(_run_cycle_time) * 35.0
+	# Trigger running skeletal animation during pursuit sprint
+	if anim_player and not anim_player.is_playing():
+		anim_player.play("Animation")
 	
 	if _current_velocity.length() > 0.5:
 		look_at(global_position + _current_velocity, Vector3.UP)
@@ -190,6 +187,5 @@ func reset_to_home() -> void:
 	_current_velocity = Vector3.ZERO
 	current_state = FielderState.IDLE
 	has_ball = false
-	if left_leg and right_leg:
-		left_leg.rotation_degrees.x = 0.0
-		right_leg.rotation_degrees.x = 0.0
+	if anim_player:
+		anim_player.stop()
