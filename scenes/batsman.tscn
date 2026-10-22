@@ -55,33 +55,40 @@ height = 0.22
 
 [node name="Batsman" type="Node3D" node_paths=PackedStringArray("bat_node")]
 script = ExtResource("1_batting")
-bat_node = NodePath("BatPivot")
+bat_node = NodePath("Torso/RightArm/BatPivot")
 
 [node name="Torso" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.15, 0)
 mesh = SubResource("Mesh_Torso")
 
-[node name="Head" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.62, 0)
+[node name="Head" type="MeshInstance3D" parent="Torso"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.47, 0)
 mesh = SubResource("Mesh_Head")
 
+[node name="RightArm" type="Node3D" parent="Torso"]
+transform = Transform3D(0.965926, -0.258819, 0, 0.258819, 0.965926, 0, 0, 0, 1, 0.24, 0.15, 0.05)
+
+[node name="RightArmMesh" type="MeshInstance3D" parent="Torso/RightArm"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.22, 0)
+mesh = SubResource("Mesh_Handle")
+
+[node name="BatPivot" type="Node3D" parent="Torso/RightArm"]
+transform = Transform3D(1, 0, 0, 0, 0.965926, 0.258819, 0, -0.258819, 0.965926, 0, -0.38, 0.05)
+
+[node name="Bat" type="Node3D" parent="Torso/RightArm/BatPivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3, 0)
+
+[node name="Blade" type="MeshInstance3D" parent="Torso/RightArm/BatPivot/Bat"]
+mesh = SubResource("Mesh_BatBlade")
+
+[node name="Handle" type="MeshInstance3D" parent="Torso/RightArm/BatPivot/Bat"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.42, 0)
+mesh = SubResource("Mesh_Handle")
+
 [node name="LeftLeg" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.12, 0.45, 0.05)
+transform = Transform3D(0.996195, 0.0871557, 0, -0.0871557, 0.996195, 0, 0, 0, 1, -0.14, 0.45, 0.12)
 mesh = SubResource("Mesh_LegPad")
 
 [node name="RightLeg" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.12, 0.45, -0.05)
+transform = Transform3D(0.996195, -0.0871557, 0, 0.0871557, 0.996195, 0, 0, 0, 1, 0.14, 0.45, -0.12)
 mesh = SubResource("Mesh_LegPad")
-
-[node name="BatPivot" type="Node3D" parent="."]
-transform = Transform3D(0.965926, -0.258819, 0, 0.258819, 0.965926, 0, 0, 0, 1, 0.22, 0.75, 0.1)
-
-[node name="Bat" type="Node3D" parent="BatPivot"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3, 0)
-
-[node name="Blade" type="MeshInstance3D" parent="BatPivot/Bat"]
-mesh = SubResource("Mesh_BatBlade")
-
-[node name="Handle" type="MeshInstance3D" parent="BatPivot/Bat"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.42, 0)
-mesh = SubResource("Mesh_Handle")

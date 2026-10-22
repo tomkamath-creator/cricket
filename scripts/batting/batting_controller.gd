@@ -18,11 +18,14 @@ var current_shot_direction: GameConstants.ShotDirection = GameConstants.ShotDire
 var is_swinging: bool = false
 var strike_plane_z: float = 9.05 # Ideal contact plane along Z (near popping crease)
 
-# Procedural bat swing animation
+# Procedural bat swing & idle stance animation
 var _swing_time: float = 0.0
 var _swing_duration: float = 0.38
 var _bat_initial_rot: Vector3 = Vector3.ZERO
 var _bat_initial_pos: Vector3 = Vector3.ZERO
+var _idle_time: float = 0.0
+
+@onready var torso_node: Node3D = $Torso
 
 func _ready() -> void:
 	if bat_node:
@@ -89,6 +92,14 @@ func _start_swing_animation(shot_data: ShotLibrary.ShotData) -> void:
 		get_tree().create_timer(_swing_duration).timeout.connect(func(): is_swinging = false)
 
 func _process(delta: float) -> void:
+	# Subtle natural breathing & bat tapping idle cycle (Real Cricket / WCC2 stance)
+	if not is_swinging and bat_node:
+		_idle_time += delta * 4.5
+		var bat_tap: float = sin(_idle_time) * 4.0
+		bat_node.rotation_degrees.x = _bat_initial_rot.x + bat_tap
+		if torso_node:
+			torso_node.position.y = 1.15 + (sin(_idle_time * 0.5) * 0.012)
+			
 	# Keyboard / Desktop fallback controls for testing
 	if Input.is_action_just_pressed("shot_grounded"):
 		trigger_shot(GameConstants.ShotElevation.GROUNDED)
