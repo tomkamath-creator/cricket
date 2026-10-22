@@ -12,6 +12,7 @@
 [ext_resource type="Script" path="res://scripts/fielding/fielding_manager.gd" id="10_fieldmgr"]
 [ext_resource type="PackedScene" uid="uid://fielder001" path="res://scenes/fielder.tscn" id="11_fielder"]
 [ext_resource type="Script" path="res://scripts/match/match_controller.gd" id="12_match"]
+[ext_resource type="PackedScene" uid="uid://umpire001" path="res://scenes/umpire.tscn" id="13_umpire"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_1"]
 sky_top_color = Color(0.24, 0.52, 0.88, 1)
@@ -53,6 +54,12 @@ is_striker_end = false
 
 [node name="Batsman" parent="." instance=ExtResource("5_batsman")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.15, 0, 9.05)
+
+[node name="BowlerUmpire" parent="." instance=ExtResource("13_umpire")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0, 0, -12.4)
+
+[node name="SquareLegUmpire" parent="." instance=ExtResource("13_umpire")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 14.5, 0, 8.8)
 
 [node name="CricketBall" parent="." instance=ExtResource("4_ball")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.4, 2.15, -9.5)

@@ -15,13 +15,13 @@ enum CameraMode {
 @export var batsman_target: Node3D
 @export var follow_damping: float = 6.0
 
-# Target presets
-var _pos_behind_batsman := Vector3(0.0, 1.85, 13.8)
-var _look_behind_batsman := Vector3(0.0, 0.85, -2.0)
+# Target presets (WCC2 & Real Cricket camera style: higher angle looking down pitch towards bowler)
+var _pos_behind_batsman := Vector3(0.0, 3.2, 14.5)
+var _look_behind_batsman := Vector3(0.0, 0.85, 0.0)
 
 var _pos_broadcast_side := Vector3(-26.0, 10.5, 2.0)
-var _pos_bowler_end := Vector3(0.0, 2.3, -15.2)
-var _look_bowler_end := Vector3(0.0, 0.9, 9.0)
+var _pos_bowler_end := Vector3(0.0, 3.2, -15.5)
+var _look_bowler_end := Vector3(0.0, 0.9, 8.0)
 
 var _target_pos: Vector3
 var _target_look_at: Vector3

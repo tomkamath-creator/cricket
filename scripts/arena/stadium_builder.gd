@@ -39,10 +39,16 @@ func _build_pitch_strip() -> void:
 	var pitch_mesh := BoxMesh.new()
 	pitch_mesh.size = Vector3(GameConstants.PITCH_WIDTH, 0.08, GameConstants.PITCH_LENGTH + 2.5)
 	
-	var pitch_mat := StandardMaterial3D.new()
-	pitch_mat.albedo_color = Color(0.72, 0.65, 0.46) # Clay/soil turf
-	pitch_mat.roughness = 0.75
-	pitch_mesh.material = pitch_mat
+	var pitch_shader := load("res://shaders/pitch_turf.gdshader")
+	if pitch_shader:
+		var s_mat := ShaderMaterial.new()
+		s_mat.shader = pitch_shader
+		pitch_mesh.material = s_mat
+	else:
+		var pitch_mat := StandardMaterial3D.new()
+		pitch_mat.albedo_color = Color(0.72, 0.65, 0.46)
+		pitch_mat.roughness = 0.75
+		pitch_mesh.material = pitch_mat
 	
 	var mesh_inst := MeshInstance3D.new()
 	mesh_inst.mesh = pitch_mesh
@@ -110,10 +116,16 @@ func _build_outfield() -> void:
 	cylinder.height = 0.1
 	cylinder.radial_segments = 64
 	
-	var grass_mat := StandardMaterial3D.new()
-	grass_mat.albedo_color = Color(0.18, 0.45, 0.15)
-	grass_mat.roughness = 0.8
-	cylinder.material = grass_mat
+	var outfield_shader := load("res://shaders/striped_outfield.gdshader")
+	if outfield_shader:
+		var s_mat := ShaderMaterial.new()
+		s_mat.shader = outfield_shader
+		cylinder.material = s_mat
+	else:
+		var grass_mat := StandardMaterial3D.new()
+		grass_mat.albedo_color = Color(0.18, 0.45, 0.15)
+		grass_mat.roughness = 0.8
+		cylinder.material = grass_mat
 	
 	var mesh_inst := MeshInstance3D.new()
 	mesh_inst.mesh = cylinder
